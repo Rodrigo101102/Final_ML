@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Network Traffic Analysis System
 
 This project is a full-stack web application for real-time network traffic analysis and attack detection.
@@ -103,3 +104,6 @@ docker-compose up
 ## License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
+=======
+# Final_ML
+>>>>>>> cbfa93ddd217c3f421498ffc06afacc118147d4f
