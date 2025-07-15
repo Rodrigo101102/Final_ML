@@ -536,7 +536,7 @@ async def get_network_interfaces():
     try:
         import psutil
         interfaces = []
-        
+         
         # Obtener todas las interfaces de red
         net_if_addrs = psutil.net_if_addrs()
         net_if_stats = psutil.net_if_stats()
