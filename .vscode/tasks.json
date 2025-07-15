@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Start Backend",
+			"type": "shell",
+			"command": "cd backend && python -m uvicorn main:app --reload",
+			"problemMatcher": []
+		}
+	]
+}

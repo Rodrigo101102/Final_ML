@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ML Traffic Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .card {
+            border: none;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border: none;
+            border-radius: 10px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            border: none;
+            border-radius: 10px;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            padding: 12px 16px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+        }
+
+        .alert {
+            border-radius: 15px;
+            border: none;
+            padding: 15px 20px;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        .progress {
+            border-radius: 10px;
+            background-color: rgba(99, 102, 241, 0.1);
+        }
+
+        .progress-bar {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            border-radius: 10px;
+        }
+
+        .badge-benign {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+        }
+
+        .badge-suspicious {
+            background: linear-gradient(135deg, var(--warning-color) 0%, #d97706 100%);
+            color: white;
+        }
+
+        .badge-malicious {
+            background: linear-gradient(135deg, var(--danger-color) 0%, #dc2626 100%);
+            color: white;
+        }
+
+        .icon-container {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .icon-success {
+            background: linear-gradient(135deg, var(--success-color) 0%, #059669 100%);
+            color: white;
+        }
+
+        .results-container {
+            max-height: 600px;
+            overflow-y: auto;
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            border: none;
+            padding: 15px;
+        }
+
+        .table tbody td {
+            padding: 12px 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .connection-status {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <!-- Estado de Conexión -->
+    <div class="connection-status">
+        <span id="connectionStatus" class="badge bg-secondary">Verificando...</span>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-shield-alt me-2"></i>
+                ML Traffic Analyzer
+            </a>
+            <span class="navbar-text">
+                <i class="fas fa-brain me-1"></i>
+                Análisis Inteligente de Tráfico de Red
+            </span>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <!-- Alert Area -->
+        <div id="alertArea"></div>
+
+        <!-- Formulario de Configuración -->
+        <div class="row mb-4">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-cog me-2"></i>
+                            Configuración del Análisis
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="duration" class="form-label">
+                                    <i class="fas fa-clock me-2"></i>
+                                    Duración de Captura: <span id="durationValue">20</span> segundos
+                                </label>
+                                <input type="range" class="form-range" id="duration" min="5" max="60" value="20">
+                                <div class="d-flex justify-content-between">
+                                    <small class="text-muted">5s</small>
+                                    <small class="text-muted">60s</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="connectionType" class="form-label">
+                                    <i class="fas fa-wifi me-2"></i>
+                                    Tipo de Conexión
+                                </label>
+                                <select class="form-select" id="connectionType">
+                                    <option value="wifi">WiFi</option>
+                                    <option value="ethernet">Ethernet</option>
+                                    <option value="mobile">Móvil</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button class="btn btn-primary btn-lg" id="startAnalysisBtn">
+                                <i class="fas fa-play me-2"></i>
+                                Iniciar Análisis
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Estado de la Base de Datos -->
+        <div id="databaseStatusArea" class="row mb-4" style="display: none;">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="card-title mb-0">
+                            <i class="fas fa-database me-2"></i>
+                            Estado de la Base de Datos
+                        </h5>
+                    </div>
+                    <div class="card-body" id="databaseStatusContent">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Progreso -->
+        <div id="progressArea" class="row mb-4" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body" id="progressContent">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Resultados -->
+        <div id="resultsArea" class="row" style="display: none;">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title mb-0">
+                            <i class="fas fa-chart-line me-2"></i>
+                            Resultados del Análisis
+                        </h4>
+                    </div>
+                    <div class="card-body" id="resultsContent">
+                        <!-- Se llenará dinámicamente -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_BASE_URL = 'http://localhost:8003';
+
+        class TrafficAnalyzer {
+            constructor() {
+                this.init();
+            }
+
+            init() {
+                // Event listeners
+                document.getElementById('duration').addEventListener('input', (e) => {
+                    document.getElementById('durationValue').textContent = e.target.value;
+                });
+
+                document.getElementById('startAnalysisBtn').addEventListener('click', () => {
+                    this.startAnalysis();
+                });
+
+                // Verificar conexión inicial
+                this.checkConnection();
+                this.checkDatabaseStatus();
+
+                // Verificar conexión cada 30 segundos
+                setInterval(() => this.checkConnection(), 30000);
+            }
+
+            async checkConnection() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/api/test`);
+                    if (response.ok) {
+                        const data = await response.json();
+                        document.getElementById('connectionStatus').className = 'badge bg-success';
+                        document.getElementById('connectionStatus').textContent = 'Backend Conectado';
+                    } else {
+                        throw new Error('Backend no responde');
+                    }
+                } catch (error) {
+                    document.getElementById('connectionStatus').className = 'badge bg-danger';
+                    document.getElementById('connectionStatus').textContent = 'Backend Desconectado';
+                    console.error('Error de conexión:', error);
+                }
+            }
+
+            async checkDatabaseStatus() {
+                try {
+                    const response = await fetch(`${API_BASE_URL}/database/status`);
+                    const data = await response.json();
+                    
+                    if (data.status === 'connected') {
+                        document.getElementById('databaseStatusArea').style.display = 'block';
+                        document.getElementById('databaseStatusContent').innerHTML = `
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <div class="icon-container icon-success mx-auto">
+                                            <i class="fas fa-check fa-lg"></i>
+                                        </div>
+                                        <h6>Conectado</h6>
+                                        <small class="text-muted">${data.database}</small>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h3 class="text-primary">${data.total_records || 0}</h3>
+                                        <p class="text-muted">Registros Totales</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="text-center">
+                                        <h6>Host: ${data.host}:${data.port}</h6>
+                                        <small class="text-muted">PostgreSQL</small>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error verificando BD:', error);
+                }
+            }
+
+            async startAnalysis() {
+                const duration = document.getElementById('duration').value;
+                const connectionType = document.getElementById('connectionType').value;
+
+                if (!duration || !connectionType) {
+                    this.showAlert('Por favor, complete todos los campos.', 'danger');
+                    return;
+                }
+
+                const btn = document.getElementById('startAnalysisBtn');
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Analizando...';
+
+                this.showProgress();
+
+                try {
+                    this.updateProgress('1. Preparando captura de tráfico...', 20);
+
+                    const response = await fetch(`${API_BASE_URL}/analyze`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            duration: parseInt(duration),
+                            connection_type: connectionType
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || `Error ${response.status}: ${response.statusText}`);
+                    }
+
+                    this.updateProgress('5. Finalizando análisis...', 90);
+
+                    const result = await response.json();
+
+                    if (result.success) {
+                        this.updateProgress('✓ Análisis completado con éxito', 100);
+                        setTimeout(() => {
+                            this.showResults(result);
+                            this.showAlert(`Análisis completado: ${result.summary.total_flows} flujos procesados con ${result.summary.columns_count} características`, 'success');
+                            this.checkDatabaseStatus(); // Actualizar estado de BD
+                        }, 1000);
+                    } else {
+                        throw new Error(result.error || 'Error desconocido en el análisis');
+                    }
+
+                } catch (error) {
+                    console.error('Error:', error);
+                    this.showAlert(`❌ Error en el análisis: ${error.message}`, 'danger');
+                    this.hideProgress();
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = '<i class="fas fa-play me-2"></i>Iniciar Análisis';
+                }
+            }
+
+            showProgress() {
+                document.getElementById('progressArea').style.display = 'block';
+                document.getElementById('resultsArea').style.display = 'none';
+            }
+
+            hideProgress() {
+                document.getElementById('progressArea').style.display = 'none';
+            }
+
+            updateProgress(message, percentage) {
+                document.getElementById('progressContent').innerHTML = `
+                    <div class="text-center">
+                        <div class="spinner-border mb-3" role="status">
+                            <span class="visually-hidden">Analizando...</span>
+                        </div>
+                        <h5>Analizando Tráfico de Red</h5>
+                        <p class="text-primary">${message}</p>
+                        <div class="progress mb-3">
+                            <div class="progress-bar progress-bar-striped progress-bar-animated" 
+                                 role="progressbar" style="width: ${percentage}%"></div>
+                        </div>
+                        <small class="text-muted">Progreso: ${percentage}%</small>
+                    </div>
+                `;
+            }
+
+            showResults(result) {
+                this.hideProgress();
+                document.getElementById('resultsArea').style.display = 'block';
+
+                const summary = this.getSummary(result.predictions);
+                
+                document.getElementById('resultsContent').innerHTML = `
+                    <!-- Resumen Principal por Etiquetas Específicas -->
+                    <h5 class="mb-4 text-center">
+                        <i class="fas fa-chart-bar me-2"></i>
+                        Análisis de Tráfico de Red - Detecciones por Tipo
+                    </h5>
+                    <div class="row mb-4">
+                        ${Object.entries(summary.detailed).map(([label, data]) => `
+                            <div class="col-md-6 col-lg-4 col-xl-3 mb-3">
+                                <div class="card h-100 border-0 shadow-sm" style="background: ${this.getBackgroundColor(label)}; border-left: 4px solid var(--${data.color}-color) !important;">
+                                    <div class="card-body text-center">
+                                        <div class="icon-container mx-auto mb-3" style="background: linear-gradient(135deg, var(--${data.color}-color) 0%, var(--${data.color}-color) 100%); color: white; width: 50px; height: 50px;">
+                                            <i class="fas ${data.icon}"></i>
+                                        </div>
+                                        <h4 class="text-${data.color} mb-2">${data.count}</h4>
+                                        <h6 class="card-title mb-1">${label}</h6>
+                                        <small class="text-muted">
+                                            ${data.category === 'benign' ? 'Tráfico Seguro' : 
+                                              data.category === 'suspicious' ? 'Actividad Sospechosa' : 
+                                              'Amenaza Crítica'}
+                                        </small>
+                                        <div class="mt-2">
+                                            <span class="badge ${this.getBadgeClass(label)} w-100">${label}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                    
+                    <!-- Análisis Detallado por Flujo -->
+                    <h5 class="mb-3 mt-4">
+                        <i class="fas fa-list me-2"></i>
+                        Análisis Detallado por Flujo:
+                    </h5>
+                    <div class="row">
+                        ${result.predictions.map((pred, index) => `
+                            <div class="col-md-6 col-lg-4 mb-3">
+                                <div class="card border-0" style="background: ${this.getBackgroundColor(pred.label)};">
+                                    <div class="card-body">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <div>
+                                                <h6 class="card-title">Flujo #${index + 1}</h6>
+                                                <span class="badge ${this.getBadgeClass(pred.label)}">${pred.label}</span>
+                                            </div>
+                                            <div class="text-end">
+                                                <h5 class="mb-0">${(pred.confidence * 100).toFixed(1)}%</h5>
+                                                <small class="text-muted">Confianza</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+
+                    ${result.full_data && result.full_data.length > 0 ? `
+                        <div class="mt-4">
+                            <h5 class="mb-3">
+                                <i class="fas fa-table me-2"></i>
+                                Datos Completos (${result.summary.columns_count} Columnas)
+                            </h5>
+                            <div class="results-container">
+                                <div class="table-responsive">
+                                    <table class="table table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>#</th>
+                                                <th>Predicción</th>
+                                                <th>Confianza</th>
+                                                <th>Puerto Destino</th>
+                                                <th>Duración Flujo</th>
+                                                <th>Paquetes Fwd</th>
+                                                <th>Paquetes Bwd</th>
+                                                <th>Bytes/s</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${result.full_data.slice(0, 10).map((row, index) => `
+                                                <tr>
+                                                    <td>${index + 1}</td>
+                                                    <td><span class="badge ${this.getBadgeClass(row.Prediction)}">${row.Prediction}</span></td>
+                                                    <td>${(row.Confidence * 100).toFixed(1)}%</td>
+                                                    <td>${row['Destination Port']?.toFixed(0) || 'N/A'}</td>
+                                                    <td>${row['Flow Duration']?.toFixed(2) || 'N/A'}</td>
+                                                    <td>${row['Total Fwd Packets']?.toFixed(0) || 'N/A'}</td>
+                                                    <td>${row['Total Backward Packets']?.toFixed(0) || 'N/A'}</td>
+                                                    <td>${row['Flow Bytes/s']?.toFixed(2) || 'N/A'}</td>
+                                                </tr>
+                                            `).join('')}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                ${result.full_data.length > 10 ? `
+                                    <div class="text-center mt-3">
+                                        <small class="text-muted">Mostrando 10 de ${result.full_data.length} registros</small>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    ` : ''}
+                `;
+            }
+
+            getSummary(predictions) {
+                // Crear un resumen detallado por cada etiqueta
+                const summary = {};
+                const categoryMapping = {
+                    'BENIGN': { category: 'benign', icon: 'fa-shield-check', color: 'success' },
+                    'Bot': { category: 'malicious', icon: 'fa-robot', color: 'danger' },
+                    'DDoS': { category: 'malicious', icon: 'fa-bomb', color: 'danger' },
+                    'DoS': { category: 'malicious', icon: 'fa-skull-crossbones', color: 'danger' },
+                    'PortScan': { category: 'suspicious', icon: 'fa-search', color: 'warning' },
+                    'BruteForce': { category: 'malicious', icon: 'fa-hammer', color: 'danger' },
+                    'Infiltration': { category: 'malicious', icon: 'fa-user-secret', color: 'danger' },
+                    'WebAttack': { category: 'suspicious', icon: 'fa-globe', color: 'warning' },
+                    'Heartbleed': { category: 'malicious', icon: 'fa-heart-broken', color: 'danger' },
+                    'Unknown': { category: 'suspicious', icon: 'fa-question-circle', color: 'warning' },
+                    // Variantes adicionales para compatibilidad
+                    'DoS GoldenEye': { category: 'malicious', icon: 'fa-skull-crossbones', color: 'danger' },
+                    'DoS Hulk': { category: 'malicious', icon: 'fa-skull-crossbones', color: 'danger' },
+                    'DoS Slowhttptest': { category: 'malicious', icon: 'fa-skull-crossbones', color: 'danger' },
+                    'DoS slowloris': { category: 'malicious', icon: 'fa-skull-crossbones', color: 'danger' },
+                    'FTP-Patator': { category: 'suspicious', icon: 'fa-file-alt', color: 'warning' },
+                    'SSH-Patator': { category: 'suspicious', icon: 'fa-terminal', color: 'warning' },
+                    'Web Attack – Brute Force': { category: 'suspicious', icon: 'fa-globe', color: 'warning' },
+                    'Web Attack – Sql Injection': { category: 'malicious', icon: 'fa-database', color: 'danger' },
+                    'Web Attack – XSS': { category: 'malicious', icon: 'fa-code', color: 'danger' }
+                };
+
+                // Contar cada etiqueta específica
+                predictions.forEach(pred => {
+                    const label = pred.label;
+                    if (!summary[label]) {
+                        summary[label] = {
+                            count: 0,
+                            ...categoryMapping[label] || { category: 'suspicious', icon: 'fa-exclamation-triangle', color: 'warning' }
+                        };
+                    }
+                    summary[label].count++;
+                });
+
+                // No necesitamos totales por categoría ya que mostramos etiquetas específicas
+                return { detailed: summary, totals: {} };
+            }
+
+            getBadgeClass(label) {
+                const categories = {
+                    'BENIGN': 'badge-success bg-success',
+                    'Bot': 'badge-danger bg-danger',
+                    'DDoS': 'badge-danger bg-danger',
+                    'DoS GoldenEye': 'badge-danger bg-danger',
+                    'DoS Hulk': 'badge-danger bg-danger',
+                    'DoS Slowhttptest': 'badge-danger bg-danger',
+                    'DoS slowloris': 'badge-danger bg-danger',
+                    'FTP-Patator': 'badge-warning bg-warning text-dark',
+                    'Heartbleed': 'badge-danger bg-danger',
+                    'Infiltration': 'badge-danger bg-danger',
+                    'PortScan': 'badge-warning bg-warning text-dark',
+                    'SSH-Patator': 'badge-warning bg-warning text-dark',
+                    'Web Attack – Brute Force': 'badge-warning bg-warning text-dark',
+                    'Web Attack – Sql Injection': 'badge-danger bg-danger',
+                    'Web Attack – XSS': 'badge-danger bg-danger'
+                };
+                return categories[label] || 'badge-secondary bg-secondary';
+            }
+
+            getBackgroundColor(label) {
+                const backgrounds = {
+                    'BENIGN': 'linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%)',
+                    'Bot': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'DDoS': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'DoS GoldenEye': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'DoS Hulk': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'DoS Slowhttptest': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'DoS slowloris': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'FTP-Patator': 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)',
+                    'Heartbleed': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'Infiltration': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'PortScan': 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)',
+                    'SSH-Patator': 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)',
+                    'Web Attack – Brute Force': 'linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%)',
+                    'Web Attack – Sql Injection': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)',
+                    'Web Attack – XSS': 'linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%)'
+                };
+                return backgrounds[label] || 'linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%)';
+            }
+
+            showAlert(message, type) {
+                const alertArea = document.getElementById('alertArea');
+                alertArea.innerHTML = `
+                    <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                        <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'danger' ? 'exclamation-circle' : 'info-circle'} me-2"></i>
+                        ${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                `;
+                
+                setTimeout(() => {
+                    const alert = alertArea.querySelector('.alert');
+                    if (alert) alert.remove();
+                }, 5000);
+            }
+        }
+
+        // Inicializar la aplicación cuando se carga la página
+        document.addEventListener('DOMContentLoaded', () => {
+            new TrafficAnalyzer();
+        });
+    </script>
+</body>
+</html>
