@@ -1,12 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './App.css';
+import BACKEND_URL from './config';
 
-// Configurar axios - detectar automáticamente si estamos en producción o desarrollo
-const API_BASE_URL = process.env.NODE_ENV === 'production' 
-  ? window.location.origin 
-  : 'http://localhost:8010';
-axios.defaults.baseURL = API_BASE_URL;
+// Configurar axios con la URL del backend
+axios.defaults.baseURL = BACKEND_URL;
 
 function App() {
   const [duration, setDuration] = useState(20);
