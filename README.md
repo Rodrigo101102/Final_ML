@@ -20,6 +20,21 @@ Analizador de Tráfico de Red usando Machine Learning para clasificar y detectar
 
 ## 🚀 Instalación
 
+### ⚠️ PASO IMPORTANTE: Verificar Compatibilidad Primero
+
+**Antes de instalar, ejecuta esto para verificar que tu sistema es compatible:**
+
+```bash
+# Verificar compatibilidad (RECOMENDADO)
+python check_compatibility.py
+```
+
+Este script verifica:
+- ✅ Versión de Python compatible (3.8-3.11 recomendado)
+- ✅ Java instalado (requerido para CICFlowMeter)
+- ✅ Dependencias del sistema operativo
+- ⚠️ Detecta Python 3.12+ que puede causar errores de compilación
+
 ### 1. Clonar el repositorio
 ```bash
 git clone <tu-repositorio>
@@ -173,10 +188,25 @@ pip install -r requirements.txt
 5. **Ejecutar start_servers.bat** (Windows) o **start_servers.sh** (Linux/Mac)
 
 ### Importante:
-- ✅ **Usar Python 3.11.x** (las versiones más nuevas pueden causar problemas)
-- ✅ **Todas las dependencias están especificadas** con versiones exactas
-- ✅ **Los scripts automáticos** instalan todo por ti
+- ✅ **Usar Python 3.8-3.11** (las versiones más nuevas pueden causar problemas)
+- ✅ **Todas las dependencias están especificadas** con versiones compatibles
+- ✅ **Los scripts automáticos** verifican compatibilidad e instalan todo
 - ✅ **La configuración de base de datos** es flexible (local o remota)
+
+## 🆘 Ayuda y Solución de Problemas
+
+### **Si tienes errores durante la instalación o uso:**
+
+📖 **Documentación de ayuda disponible:**
+- `CORRECCIONES_APLICADAS.md` - Qué se corrigió y por qué
+- `SOLUCION_ERRORES.md` - Soluciones paso a paso para errores comunes
+- `python check_compatibility.py` - Verificación automática de compatibilidad
+
+### **Errores más comunes y sus soluciones:**
+- ❌ **Error de compilación Cython/scikit-learn** → Usar Python 3.8-3.11
+- ❌ **psycopg2 connection failed** → Verificar PostgreSQL y credenciales
+- ❌ **ModuleNotFoundError** → Ejecutar `install.bat` o `./install.sh`
+- ❌ **Java not found** → Instalar Java 8+ y configurar JAVA_HOME
 
 ## 📄 Licencia
 

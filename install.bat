@@ -16,6 +16,18 @@ echo ✅ Configura entorno virtual automáticamente
 echo ✅ ¡Solo ejecuta y funciona!
 echo.
 
+REM Verificación de compatibilidad ANTES de instalar
+echo [0/7] 🔍 Verificando compatibilidad del sistema...
+python check_compatibility.py
+if %errorlevel% neq 0 (
+    echo.
+    echo ❌ Sistema no compatible. Por favor resuelve los problemas indicados.
+    echo 📝 Lee el archivo CORRECCIONES_APLICADAS.md para más información.
+    pause
+    exit /b 1
+)
+echo.
+
 REM Función para detectar Python
 :detect_python
 echo [1/7] 🔍 Detectando versión de Python...

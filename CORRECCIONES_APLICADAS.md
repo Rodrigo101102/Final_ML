@@ -4,27 +4,26 @@ Este documento resume las **correcciones importantes** que se aplicaron para sol
 
 ## 🔧 CORRECCIONES CRÍTICAS APLICADAS
 
-### 1. **Versiones Compatibles en requirements.txt**
-**Problema resuelto**: Conflictos de versiones entre Python 3.13, scikit-learn y numpy
+### 1. **Versiones Compatibles Robustas en requirements.txt**
+**Problema resuelto**: Conflictos de versiones entre Python 3.12+, scikit-learn y numpy
 
 **Solución aplicada**: 
-- ✅ Especificadas versiones exactas que funcionan
-- ✅ Solo dependencias con wheels precompilados
-- ✅ Evita problemas de compilación
+- ✅ Rangos de versiones compatibles en lugar de versiones exactas
+- ✅ Dependencias de compilación incluidas (setuptools, wheel)
+- ✅ Advertencias sobre Python 3.12+ en comentarios
+- ✅ Wheels precompilados priorizados
 
 ```txt
-# backend/requirements.txt - VERSIONES PROBADAS Y FUNCIONANDO
-scikit-learn==1.3.0    # Compatible con Python 3.8-3.11
-pandas==2.0.3          # Versión estable
-numpy==1.24.4          # Compatible con scikit-learn 1.3.0
-joblib==1.3.2          # Para modelos ML
-fastapi==0.104.1       # API framework
-uvicorn[standard]==0.24.0  # Servidor ASGI
-sqlalchemy==2.0.23     # ORM base de datos
-psycopg2-binary==2.9.9 # Driver PostgreSQL SIN compilación
-python-dotenv==1.0.1   # Variables de entorno
-pydantic==2.5.3        # Validación de datos
-psutil==5.9.8          # Utilidades del sistema
+# backend/requirements.txt - VERSIONES ROBUSTAS Y COMPATIBLES
+# ⚠️ IMPORTANTE: Este proyecto funciona mejor con Python 3.8-3.11
+# Si usas Python 3.12+ pueden aparecer errores de compilación
+
+scikit-learn==1.3.2        # Versión específica con wheels para 3.8-3.11
+pandas>=2.0.0,<2.2.0       # Rango compatible
+numpy>=1.24.0,<2.0.0       # Evita numpy 2.0+ que causa conflictos
+psycopg2-binary>=2.9.0     # SIEMPRE binary para evitar compilación
+setuptools>=65.0.0          # Para evitar errores de compilación
+wheel>=0.38.0               # Para wheels precompilados
 ```
 
 ### 2. **Configuración Flexible de Base de Datos**
@@ -87,6 +86,49 @@ app.add_middleware(
 // Configuración simple para desarrollo local
 const BACKEND_URL = 'http://localhost:8010';
 export default BACKEND_URL;
+```
+
+### 5. **Script de Verificación de Compatibilidad**
+**Problema resuelto**: Errores de compilación inesperados para usuarios
+
+**Solución aplicada en `check_compatibility.py`**:
+- ✅ Verifica versión de Python antes de instalar
+- ✅ Detecta Python 3.12+ y advierte sobre posibles problemas
+- ✅ Verifica Java (requerido para CICFlowMeter)
+- ✅ Verifica dependencias del sistema operativo
+- ✅ Integrado en scripts de instalación automática
+
+```python
+# Ejecutar antes de instalar
+python check_compatibility.py
+
+# Output ejemplo:
+# 🐍 Python detectado: 3.13.0
+# ⚠️  ADVERTENCIA: Python 3.12+ puede causar problemas de compilación
+#    Recomendamos usar Python 3.8-3.11
+```
+
+### 6. **Archivo .python-version**
+**Problema resuelto**: Falta de especificación de versión recomendada
+
+**Solución aplicada**:
+- ✅ Archivo `.python-version` especifica Python 3.11.9
+- ✅ Compatible con pyenv y herramientas de gestión de versiones
+- ✅ Documentación clara sobre versiones soportadas
+
+### 7. **Scripts de Instalación con Verificación Automática**
+**Problema resuelto**: Instalación sin verificación previa de compatibilidad
+
+**Solución aplicada en `install.bat` e `install.sh`**:
+- ✅ Ejecutan verificación de compatibilidad ANTES de instalar
+- ✅ Detienen la instalación si hay problemas de compatibilidad
+- ✅ Mensajes claros sobre cómo resolver problemas
+- ✅ Evitan errores de compilación durante la instalación
+
+```bash
+# Los scripts ahora ejecutan automáticamente:
+# [0/7] 🔍 Verificando compatibilidad del sistema...
+# python check_compatibility.py
 ```
 
 ## 📋 ARCHIVOS ELIMINADOS (Ya no existen)

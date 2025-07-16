@@ -24,6 +24,17 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
+# Verificación de compatibilidad ANTES de instalar
+echo "[0/7] 🔍 Verificando compatibilidad del sistema..."
+python3 check_compatibility.py
+if [ $? -ne 0 ]; then
+    echo
+    echo -e "${RED}❌ Sistema no compatible. Por favor resuelve los problemas indicados.${NC}"
+    echo -e "${YELLOW}📝 Lee el archivo CORRECCIONES_APLICADAS.md para más información.${NC}"
+    exit 1
+fi
+echo
+
 # Función para detectar Python
 detect_python() {
     echo "[1/7] 🔍 Detectando versión de Python..."
