@@ -1,53 +1,71 @@
-# ML Traffic Analyzer
+# 🚀 ML Traffic Analyzer
 
-Analizador de Tráfico de Red usando Machine Learning para clasificar y detectar tipos de tráfico en tiempo real.
+Sistema de análisis de tráfico de red con Machine Learning - **INSTALACIÓN SÚPER SIMPLE**
 
-## 🎯 Características
+## ⚡ INSTALACIÓN RÁPIDA
 
-- **Captura en tiempo real**: Análiza tráfico de red usando CICFlowMeter
-- **Machine Learning**: Clasificación automática con scikit-learn
-- **Base de datos**: Almacenamiento en PostgreSQL
-- **API REST**: Backend FastAPI para comunicación con frontend
-- **Frontend React**: Interfaz web moderna para visualización
+### 📋 **Requisitos:**
+- Python 3.8-3.11 (⚠️ NO 3.12+)
+- PostgreSQL
+- Node.js 18+
 
-## 📋 Requisitos del Sistema
-
-- **Python 3.8-3.11** (recomendado 3.11 para evitar conflictos)
-- **PostgreSQL** instalado y corriendo
-- **Node.js 18+** para el frontend
-- **Java 8+** (para CICFlowMeter)
-- **WinPcap** o **Npcap** en Windows
-
-## 🚀 Instalación
-
-### ⚠️ PASO IMPORTANTE: Verificar Compatibilidad Primero
-
-**Antes de instalar, ejecuta esto para verificar que tu sistema es compatible:**
-
+### 🔧 **Instalar:**
 ```bash
-# Verificar compatibilidad (RECOMENDADO)
-python check_compatibility.py
+# 1. Backend
+cd backend
+pip install -r requirements.txt
+
+# 2. Frontend
+cd ../frontend-react  
+npm install && npm run build
+
+# 3. Configurar .env (ver INSTALACION_SIMPLE.md)
 ```
 
-Este script verifica:
-- ✅ Versión de Python compatible (3.8-3.11 recomendado)
-- ✅ Java instalado (requerido para CICFlowMeter)
-- ✅ Dependencias del sistema operativo
-- ⚠️ Detecta Python 3.12+ que puede causar errores de compilación
-
-### 1. Clonar el repositorio
+### ▶️ **Ejecutar:**
 ```bash
-git clone <tu-repositorio>
-cd Final_ML
+# Terminal 1 - Backend
+cd backend && python app_postgres.py
+
+# Terminal 2 - Frontend  
+cd frontend-react && node server.js
 ```
 
-### 2. Configurar PostgreSQL
-```sql
--- Crear base de datos
-CREATE DATABASE trafic_red;
-CREATE USER postgres WITH PASSWORD 'tu_password';
-GRANT ALL PRIVILEGES ON DATABASE trafic_red TO postgres;
+### 🌐 **Acceder:**
+- **App:** http://localhost:3000
+- **API:** http://localhost:8010
+
+---
+
+## 📖 **GUÍA COMPLETA:** 
+👉 **[INSTALACION_SIMPLE.md](INSTALACION_SIMPLE.md)** ← LEE ESTO PRIMERO
+
+---
+
+## 🎯 **Características:**
+- ✅ Análisis de tráfico de red en tiempo real
+- ✅ Clasificación ML de paquetes  
+- ✅ Interfaz web moderna
+- ✅ Captura de paquetes automática
+- ✅ Reportes y visualizaciones
+- ✅ Base de datos PostgreSQL
+- ✅ API REST completa
+
+## 📁 **Estructura:**
 ```
+Final_ML/
+├── backend/           # FastAPI + ML Models
+├── frontend-react/    # React UI
+└── flowmeter/        # Network Analysis Tools
+```
+
+## 🆘 **¿Problemas?**
+1. Lee **[INSTALACION_SIMPLE.md](INSTALACION_SIMPLE.md)**
+2. Verifica versión Python: `python --version` 
+3. Revisa PostgreSQL funcionando
+4. Ejecuta: `pip install -r requirements.txt`
+
+**¡Listo para usar!** 🎉
 
 ### 3. Configurar variables de entorno
 Crear archivo `backend/.env`:
