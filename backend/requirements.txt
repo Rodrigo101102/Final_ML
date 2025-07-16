@@ -5,28 +5,28 @@ uvicorn[standard]==0.24.0
 # Base de datos
 sqlalchemy==2.0.23
 sqlalchemy-utils==0.41.1
-psycopg2-binary==2.9.7
+psycopg2-binary==2.9.9
 
-# Machine Learning - versiones específicas estables
-scikit-learn==1.3.2
-pandas==2.0.3
-numpy==1.24.4
+# Machine Learning - versiones compatibles con Python 3.11
+scikit-learn==1.4.2
+pandas==2.1.4
+numpy==1.26.4
 joblib==1.3.2
 
 # Captura de tráfico de red
 pyshark==0.6
 
 # Utilidades del sistema
-psutil==5.9.5
-python-dotenv==1.0.0
+psutil==5.9.8
+python-dotenv==1.0.1
 
 # Validación de datos
-pydantic==2.4.2
+pydantic==2.5.3
 
 # Autenticación (opcional, para futuras mejoras)
 python-jose[cryptography]==3.3.0
 passlib[bcrypt]==1.7.4
-python-multipart==0.0.6
+python-multipart==0.0.9
 
 # Procesamiento de archivos
 openpyxl==3.1.2
