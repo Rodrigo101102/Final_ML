@@ -12,9 +12,11 @@ Sistema completo de análisis de tráfico de red en tiempo real usando Machine L
 - ✅ **79 características de tráfico** analizadas por paquete
 - ✅ **8 tipos de amenazas detectadas**: BENIGN, Bot, DDoS, PortScan, BruteForce, DoS, WebAttack, Unknown
 
-## 🚀 INSTALACIÓN AUTOMÁTICA (Solo 2 comandos)
+## 🚀 INSTALACIÓN 
 
-### Windows:
+### **Opción 1: Instalación Normal (Desarrollo)**
+
+**Windows:**
 ```cmd
 git clone https://github.com/melisa176/Final_ML.git
 cd Final_ML
@@ -22,7 +24,7 @@ install.bat
 start_servers.bat
 ```
 
-### Linux/Mac:
+**Linux/Mac:**
 ```bash
 git clone https://github.com/melisa176/Final_ML.git
 cd Final_ML
@@ -30,9 +32,65 @@ cd Final_ML
 ./start_servers.sh
 ```
 
-### 🌐 URLs de la aplicación:
-- **Frontend**: http://localhost:3000
-- **Backend API**: http://localhost:8010
+### **Opción 2: Docker (Producción/Demo)**
+
+**Windows:**
+```cmd
+git clone https://github.com/melisa176/Final_ML.git
+cd Final_ML
+docker-run.bat
+```
+
+**Linux/Mac:**
+```bash
+git clone https://github.com/melisa176/Final_ML.git
+cd Final_ML
+./docker-run.sh
+```
+
+## 🌐 **Acceso a la Aplicación**
+
+| Servicio | URL Normal | URL Docker |
+|----------|------------|------------|
+| **Frontend** | http://localhost:3000 | http://localhost:3000 |
+| **Backend API** | http://localhost:8010 | http://localhost:8000 |
+| **Documentación** | http://localhost:8010/docs | http://localhost:8000/docs |
+
+## 📋 **Para quien Clona el Proyecto**
+
+### 🎯 **Instrucciones Simples**
+
+1. **Clona el proyecto:**
+   ```bash
+   git clone https://github.com/melisa176/Final_ML.git
+   cd Final_ML
+   ```
+
+2. **Elige tu método preferido:**
+   
+   **🖥️ Instalación Local (más rápida para desarrollo):**
+   - Windows: Doble clic en `install.bat` → `start_servers.bat`
+   - Linux/Mac: `./install.sh` → `./start_servers.sh`
+   
+   **🐳 Docker (funciona en cualquier lado):**
+   - Windows: Doble clic en `docker-run.bat`
+   - Linux/Mac: `./docker-run.sh`
+
+3. **¡Listo!** Abre tu navegador en las URLs de arriba
+
+### 🛠️ **Solución de Problemas**
+
+**Si la instalación normal falla:**
+```bash
+quick_check.bat  # Windows
+./quick_check.sh # Linux/Mac
+```
+
+**Si Docker falla:**
+```bash
+docker-compose down
+docker-compose up --build
+```
 
 ## ✨ ¡Eso es todo!
 
