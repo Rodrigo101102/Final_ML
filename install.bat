@@ -177,6 +177,15 @@ if %errorlevel% neq 0 (
     exit /b 1
 )
 
+REM Verificar y solucionar modelos ML
+echo    🤖 Verificando modelos ML...
+cd ..
+python fix_models.py
+if %errorlevel% neq 0 (
+    echo    ⚠️  Problema con modelos ML, pero continuando...
+)
+cd backend
+
 cd ..
 echo    ✅ Dependencias de Python instaladas
 

@@ -158,8 +158,12 @@ install_python_deps() {
         exit 1
     fi
     
+    # Verificar y solucionar modelos ML
+    echo "   🤖 Verificando modelos ML..."
     deactivate
     cd ..
+    python3 fix_models.py || echo "   ⚠️  Problema con modelos ML, pero continuando..."
+    cd backend
 }
 
 # Función para verificar Node.js

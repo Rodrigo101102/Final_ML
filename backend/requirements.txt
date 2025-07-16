@@ -8,10 +8,10 @@ sqlalchemy-utils
 psycopg2-binary
 
 # Machine Learning
-scikit-learn
-pandas
-numpy
-joblib
+scikit-learn==1.3.0
+pandas>=1.5.0
+numpy>=1.21.0
+joblib>=1.1.0
 
 # Captura de tráfico de red
 pyshark
@@ -31,5 +31,4 @@ python-multipart
 # Procesamiento de archivos
 openpyxl
 
-# Logging y debugging
-python-logging
+# Nota: logging ya está incluido en Python estándar

@@ -155,6 +155,16 @@ Ver [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) para instrucciones detalladas.
 - **Linux**: `sudo apt install nodejs npm`
 - **Mac**: `brew install node`
 
+### Error de modelos ML (scikit-learn):
+```bash
+# Solución automática
+python fix_models.py
+
+# O reinstalar todo
+rm -rf backend/venv frontend-react/node_modules
+./install.sh  # o install.bat en Windows
+```
+
 ### Error en dependencias:
 ```bash
 # Reinstalar todo

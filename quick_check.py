@@ -62,6 +62,22 @@ def main():
         exists = Path(file).exists()
         print(f"   {file}: {check_mark(exists)}")
     
+    # Verificar modelos ML
+    print(f"\n🤖 Modelos ML:")
+    ml_models = [
+        "backend/ml_models/traffic_classifier.joblib",
+        "backend/ml_models/scaler.joblib", 
+        "backend/ml_models/pca_model.joblib",
+        "backend/ml_models/preprocessor_model.joblib"
+    ]
+    
+    models_ok = True
+    for model in ml_models:
+        exists = Path(model).exists()
+        print(f"   {Path(model).name}: {check_mark(exists)}")
+        if not exists:
+            models_ok = False
+    
     # Resumen
     print(f"\n📋 RESUMEN:")
     
@@ -69,7 +85,8 @@ def main():
         sys.version_info >= (3, 8) and
         venv_exists and
         node_modules and
-        all(Path(f).exists() for f in files)
+        all(Path(f).exists() for f in files) and
+        models_ok
     )
     
     if all_good:
@@ -78,6 +95,8 @@ def main():
     else:
         print("   ⚠️  Hay problemas. Ejecuta:")
         print("   🔧 install.bat (Windows) o ./install.sh (Linux/Mac)")
+        if not models_ok:
+            print("   🤖 Para problemas de modelos ML: python fix_models.py")
     
     print()
 
