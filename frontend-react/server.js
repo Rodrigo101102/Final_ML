@@ -33,7 +33,7 @@ if (!require('fs').existsSync(staticPath)) {
 // Iniciar servidor
 app.listen(PORT, () => {
     console.log(`🚀 Frontend React server running on http://localhost:${PORT}`);
-    console.log(`📊 Backend API on http://localhost:8003`);
+    console.log(`📊 Backend API on http://localhost:8010`);
     console.log(`✅ React Frontend-Backend connection ready!`);
     console.log(`📁 Static files from: ${require('fs').existsSync(path.join(__dirname, 'build')) ? 'build' : 'public'}`);
 });

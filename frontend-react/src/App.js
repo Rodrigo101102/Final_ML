@@ -3,7 +3,7 @@ import axios from 'axios';
 import './App.css';
 
 // Configurar axios para usar el backend en puerto 8005
-const API_BASE_URL = 'http://localhost:8005';
+const API_BASE_URL = 'http://localhost:8010';
 axios.defaults.baseURL = API_BASE_URL;
 
 function App() {

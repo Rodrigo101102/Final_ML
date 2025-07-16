@@ -5,9 +5,10 @@ from dotenv import load_dotenv
 load_dotenv()
 
 class DatabaseConfig:
+    """Configuración de la base de datos PostgreSQL"""
     HOST = os.getenv('DB_HOST', 'localhost')
     PORT = int(os.getenv('DB_PORT', 5432))
-    NAME = os.getenv('DB_NAME', 'traffic_db')
+    NAME = os.getenv('DB_NAME', 'trafic_red')
     USER = os.getenv('DB_USER', 'postgres')
     PASSWORD = os.getenv('DB_PASSWORD', '')
     
@@ -17,7 +18,27 @@ class DatabaseConfig:
     
     @classmethod
     def get_connection_string(cls):
+        """Obtiene la cadena de conexión para SQLAlchemy async"""
+        return f"postgresql+asyncpg://{cls.USER}:{cls.PASSWORD}@{cls.HOST}:{cls.PORT}/{cls.NAME}"
+    
+    @classmethod
+    def get_sync_connection_string(cls):
+        """Obtiene la cadena de conexión para SQLAlchemy sync"""
         return f"postgresql://{cls.USER}:{cls.PASSWORD}@{cls.HOST}:{cls.PORT}/{cls.NAME}"
+
+class ServerConfig:
+    """Configuración del servidor"""
+    HOST = os.getenv('SERVER_HOST', '0.0.0.0')
+    PORT = int(os.getenv('SERVER_PORT', 8010))
+    DEBUG = os.getenv('DEBUG', 'False').lower() == 'true'
+    ENVIRONMENT = os.getenv('ENVIRONMENT', 'development')
+
+class CaptureConfig:
+    """Configuración de captura de tráfico"""
+    TIMEOUT = int(os.getenv('CAPTURE_TIMEOUT', 300))
+    DEFAULT_INTERFACE = os.getenv('DEFAULT_INTERFACE', 'auto')
+    MIN_DURATION = int(os.getenv('MIN_CAPTURE_DURATION', 5))
+    MAX_DURATION = int(os.getenv('MAX_CAPTURE_DURATION', 60))
     
     @classmethod
     def get_sync_connection_string(cls):

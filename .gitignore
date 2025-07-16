@@ -1,0 +1,118 @@
+# Archivos de Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+# Pero incluir la biblioteca de flowmeter que es necesaria
+!backend/flowmeter/lib/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Entornos virtuales de Python
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Frontend build
+frontend-react/build/
+frontend-react/.eslintcache
+
+# Logs
+logs/
+*.log
+
+# Base de datos
+*.db
+*.sqlite3
+
+# Variables de entorno
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Archivos de captura de red
+backend/captures/*.pcap
+backend/creados/*.csv
+backend/processed/*.csv
+
+# Archivos temporales
+*.tmp
+*.temp
+backend/services/predicciones/*.csv
+
+# Modelos de ML entrenados (si son muy grandes)
+# backend/ml_models/*.pkl
+# backend/ml_models/*.joblib
+
+# Archivos del sistema
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# Archivos de backup
+*.bak
+*.backup
+
+# Archivos de configuración específicos del IDE
+*.sublime-project
+*.sublime-workspace
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+
+# Archivos de Windows
+ehthumbs.db
+Desktop.ini
+
+# Archivos de macOS
+.AppleDouble
+.LSOverride
+Icon
+
+# Archivos de Linux
+*~
