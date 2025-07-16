@@ -11,7 +11,7 @@ class DatabaseConfig:
     @classmethod
     def get_database_url(cls):
         """Obtiene URL de base de datos desde variables de entorno"""
-        # Para Render/Producción usa DATABASE_URL
+        # Priorizar DATABASE_URL si está disponible (más flexible)
         database_url = os.getenv('DATABASE_URL')
         if database_url:
             return database_url
