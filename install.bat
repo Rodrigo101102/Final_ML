@@ -164,7 +164,7 @@ if %errorlevel% neq 0 (
     
     for %%d in (%deps%) do (
         echo       Instalando %%d...
-        python -m pip install %%d --timeout 60
+        python -m pip install %%d --timeout 60 --upgrade
     )
 )
 

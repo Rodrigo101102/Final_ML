@@ -63,43 +63,59 @@ def create_dummy_models():
         import numpy as np
         
         print(f"📦 Usando scikit-learn {sklearn.__version__}")
+        print(f"📦 Usando numpy {np.__version__}")
         
         models_dir = Path("ml_models")
         models_dir.mkdir(exist_ok=True)
         
-        # Crear datos dummy para entrenar
-        X_dummy = np.random.rand(100, 79)  # 79 características como en el proyecto original
-        y_dummy = np.random.choice(['BENIGN', 'Bot', 'DDoS', 'PortScan', 'BruteForce', 'DoS', 'WebAttack', 'Unknown'], 100)
+        # Crear datos dummy para entrenar (compatible con todas las versiones)
+        np.random.seed(42)  # Para reproducibilidad
+        X_dummy = np.random.rand(1000, 79).astype(np.float32)  # 79 características como en el proyecto original
+        y_dummy = np.random.choice(['BENIGN', 'Bot', 'DDoS', 'PortScan', 'BruteForce', 'DoS', 'WebAttack', 'Unknown'], 1000)
         
         # 1. Crear clasificador principal
         print("   🤖 Creando traffic_classifier...")
-        clf = RandomForestClassifier(n_estimators=10, random_state=42)
+        clf = RandomForestClassifier(
+            n_estimators=100, 
+            random_state=42,
+            max_depth=10,
+            min_samples_split=5,
+            n_jobs=-1
+        )
         clf.fit(X_dummy, y_dummy)
-        joblib.dump(clf, models_dir / "traffic_classifier.joblib")
+        joblib.dump(clf, models_dir / "traffic_classifier.joblib", compress=3)
         
         # 2. Crear scaler
         print("   📏 Creando scaler...")
         scaler = StandardScaler()
         scaler.fit(X_dummy)
-        joblib.dump(scaler, models_dir / "scaler.joblib")
+        joblib.dump(scaler, models_dir / "scaler.joblib", compress=3)
         
         # 3. Crear PCA
         print("   🔄 Creando pca_model...")
-        pca = PCA(n_components=50, random_state=42)
+        pca = PCA(n_components=min(50, X_dummy.shape[1]), random_state=42)
         pca.fit(X_dummy)
-        joblib.dump(pca, models_dir / "pca_model.joblib")
+        joblib.dump(pca, models_dir / "pca_model.joblib", compress=3)
         
         # 4. Crear preprocessor
         print("   🔧 Creando preprocessor...")
         preprocessor = LabelEncoder()
         preprocessor.fit(y_dummy)
-        joblib.dump(preprocessor, models_dir / "preprocessor_model.joblib")
+        joblib.dump(preprocessor, models_dir / "preprocessor_model.joblib", compress=3)
         
-        print("✅ Modelos compatibles creados exitosamente")
+        # Verificar que los modelos se crearon y se pueden cargar
+        print("   ✅ Verificando modelos creados...")
+        for model_file in ["traffic_classifier.joblib", "scaler.joblib", "pca_model.joblib", "preprocessor_model.joblib"]:
+            test_model = joblib.load(models_dir / model_file)
+            print(f"      ✅ {model_file}: OK")
+        
+        print("✅ Modelos compatibles creados y verificados exitosamente")
+        print(f"📍 Versiones: scikit-learn {sklearn.__version__}, numpy {np.__version__}")
         return True
         
     except Exception as e:
         print(f"❌ Error creando modelos: {e}")
+        print(f"💡 Intenta: pip install --upgrade scikit-learn numpy pandas")
         return False
 
 def main():

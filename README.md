@@ -165,6 +165,17 @@ rm -rf backend/venv frontend-react/node_modules
 ./install.sh  # o install.bat en Windows
 ```
 
+### Error de dependencias incompatibles (numpy, pandas, etc.):
+```bash
+# Solución automática para tu versión de Python
+python fix_dependencies.py
+
+# O manualmente según tu Python:
+# Python 3.12+: pip install numpy>=1.26.0 pandas>=2.0.0 scikit-learn>=1.3.0
+# Python 3.11: pip install numpy>=1.24.0 pandas>=1.5.0 scikit-learn>=1.2.0  
+# Python 3.10: pip install numpy>=1.21.0 pandas>=1.4.0 scikit-learn>=1.1.0
+```
+
 ### Error en dependencias:
 ```bash
 # Reinstalar todo

@@ -145,7 +145,7 @@ install_python_deps() {
         
         for dep in $deps; do
             echo "      Instalando $dep..."
-            python -m pip install "$dep" --timeout 60
+            python -m pip install "$dep" --timeout 60 --upgrade
         done
     fi
     
