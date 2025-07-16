@@ -10,7 +10,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+
 lib64/
 # Pero incluir la biblioteca de flowmeter que es necesaria
 !backend/flowmeter/lib/
