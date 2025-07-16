@@ -1,34 +1,32 @@
 # FastAPI y servidor web
-fastapi
-uvicorn[standard]
+fastapi==0.104.1
+uvicorn[standard]==0.24.0
 
 # Base de datos
-sqlalchemy
-sqlalchemy-utils
-psycopg2-binary
+sqlalchemy==2.0.23
+sqlalchemy-utils==0.41.1
+psycopg2-binary==2.9.7
 
-# Machine Learning
-scikit-learn>=1.3.0,<1.5.0
-pandas>=2.0.0
-numpy>=1.26.0
-joblib>=1.3.0
+# Machine Learning - versiones específicas estables
+scikit-learn==1.3.2
+pandas==2.0.3
+numpy==1.24.4
+joblib==1.3.2
 
 # Captura de tráfico de red
-pyshark
+pyshark==0.6
 
 # Utilidades del sistema
-psutil
-python-dotenv
+psutil==5.9.5
+python-dotenv==1.0.0
 
 # Validación de datos
-pydantic
+pydantic==2.4.2
 
 # Autenticación (opcional, para futuras mejoras)
-python-jose[cryptography]
-passlib[bcrypt]
-python-multipart
+python-jose[cryptography]==3.3.0
+passlib[bcrypt]==1.7.4
+python-multipart==0.0.6
 
 # Procesamiento de archivos
-openpyxl
-
-# Nota: logging ya está incluido en Python estándar
+openpyxl==3.1.2
