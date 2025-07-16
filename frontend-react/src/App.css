@@ -514,6 +514,37 @@ body {
   box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.2);
 }
 
+/* Mejor contraste para el recuadro de resumen de paquetes analizados */
+.card.bg-gradient.text-white {
+  color: #111 !important;
+  background: #fff !important;
+  border: 2px solid #6366f1;
+  box-shadow: 0 4px 24px 0 rgba(99,102,241,0.18);
+}
+
+.card.bg-gradient.text-white h3,
+.card.bg-gradient.text-white h6,
+.card.bg-gradient.text-white small {
+  color: #111 !important;
+  font-weight: 700;
+  text-shadow: none;
+}
+
+.card.bg-gradient.text-white h3 {
+  font-size: 2.4rem;
+  margin-bottom: 0.2rem;
+}
+
+.card.bg-gradient.text-white h6 {
+  font-size: 1.2rem;
+  margin-bottom: 0.1rem;
+}
+
+.card.bg-gradient.text-white small {
+  font-size: 1.05rem;
+  opacity: 1;
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .main-container {
