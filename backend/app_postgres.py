@@ -22,13 +22,10 @@ from services.prediction_service import PredictionService
 
 app = FastAPI(title="ML Traffic Analyzer", description="Análisis de Tráfico de Red con Machine Learning")
 
-# Configurar CORS para desarrollo local con React
+# Configurar CORS para permitir el frontend React en puerto 3000
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000", 
-        "http://127.0.0.1:3000",
-    ],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "*"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -308,20 +305,12 @@ async def startup_event():
 
 @app.get("/")
 async def read_root():
-    """API Information"""
-    return {
-        "message": "ML Traffic Analyzer API",
-        "version": "1.0.0", 
-        "status": "running",
-        "frontend": "Deploy tu frontend a Vercel primero",
-        "docs": "/docs",
-        "endpoints": {
-            "analyze": "/analyze",
-            "history": "/history",
-            "database_status": "/database/status", 
-            "test": "/api/test"
-        }
-    }
+    """Servir la página principal"""
+    frontend_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "frontend", "index.html")
+    if os.path.exists(frontend_path):
+        return FileResponse(frontend_path)
+    else:
+        return {"message": "ML Traffic Analyzer API", "frontend": "no encontrado"}
 
 @app.get("/api/test")
 async def test_connection():
@@ -330,15 +319,6 @@ async def test_connection():
         "status": "success",
         "message": "Backend conectado correctamente",
         "timestamp": datetime.now().isoformat()
-    }
-
-@app.get("/health")
-async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "timestamp": datetime.now().isoformat(),
-        "service": "ML Traffic Analyzer API"
     }
 
 @app.post("/analyze")

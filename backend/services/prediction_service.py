@@ -56,9 +56,35 @@ class PredictionService:
         # Configurar logging
         self._setup_logging()
         
-        # Cargar modelos con compatibilidad automática
-        if not self._cargar_modelos_con_compatibilidad():
-            raise RuntimeError("No se pudieron cargar ni crear modelos ML compatibles")
+        try:
+            # Verificar directorio de modelos
+            if not os.path.exists(self.models_dir):
+                raise FileNotFoundError(f"Directorio de modelos no encontrado: {self.models_dir}")
+            
+            # Definir archivos de modelos
+            model_files = {
+                "preprocessor": "preprocessor_model.joblib",
+                "pca": "pca_model.joblib",
+                "classifier": "traffic_classifier.joblib"
+            }
+            
+            # Verificar existencia de archivos
+            for model_name, filename in model_files.items():
+                file_path = os.path.join(self.models_dir, filename)
+                if not os.path.exists(file_path):
+                    raise FileNotFoundError(f"Archivo de modelo no encontrado: {file_path}")
+                logging.info(f"Modelo encontrado: {filename}")
+            
+            # Cargar modelos
+            self.scaler = joblib.load(os.path.join(self.models_dir, model_files["preprocessor"]))
+            self.pca = joblib.load(os.path.join(self.models_dir, model_files["pca"]))
+            self.model = joblib.load(os.path.join(self.models_dir, model_files["classifier"]))
+            logging.info("Modelos cargados exitosamente")
+            
+        except Exception as e:
+            error_msg = f"Error cargando modelos ML: {str(e)}"
+            logging.exception(error_msg)
+            raise RuntimeError(error_msg)
         
         # Columnas binarias que se manejan por separado
         self.binary_features = ['FIN Flag Count', 'PSH Flag Count']
@@ -148,17 +174,28 @@ class PredictionService:
             # Agregar columnas binarias
             for col in self.binary_features:
                 final_df[col] = binary_data[col]
-            
+
+            # Asegurar que todas las columnas numéricas y categóricas estén presentes
+            expected_cols = COLUMNAS + COLUMNAS_CATEGORICAS
+            missing_cols = [col for col in expected_cols if col not in final_df.columns]
+            if missing_cols:
+                logging.warning(f"Agregando columnas faltantes con ceros: {missing_cols}")
+                for col in missing_cols:
+                    final_df[col] = 0
+
+            # Ordenar columnas según el modelo espera
+            final_df = final_df[expected_cols]
+
             result['success'] = True
             result['dataframe'] = final_df
             result['details']['steps'].append({
                 'step': 'final',
                 'columns': final_df.columns.tolist()
             })
-            
+
             logging.info("Características preparadas exitosamente")
             return result
-            
+
         except Exception as e:
             error_msg = f"Error preparando características: {str(e)}"
             logging.exception(error_msg)
@@ -255,114 +292,3 @@ class PredictionService:
             logging.exception(error_msg)
             result['error'] = error_msg
             return result
-    
-    def _cargar_modelos_con_compatibilidad(self):
-        """Cargar modelos con manejo automático de incompatibilidades"""
-        try:
-            # Crear directorio si no existe
-            os.makedirs(self.models_dir, exist_ok=True)
-            
-            # Archivos de modelos originales y alternativos
-            model_files = [
-                ("scaler", ["scaler.joblib", "preprocessor_model.joblib"]),
-                ("pca", ["pca_model.joblib"]),
-                ("classifier", ["traffic_classifier.joblib"])
-            ]
-            
-            logging.info("🔄 Cargando modelos ML...")
-            
-            # Intentar cargar modelos existentes
-            try:
-                with warnings.catch_warnings():
-                    warnings.simplefilter("ignore")
-                    
-                    # Cargar scaler
-                    scaler_loaded = False
-                    for filename in model_files[0][1]:
-                        scaler_path = os.path.join(self.models_dir, filename)
-                        if os.path.exists(scaler_path):
-                            try:
-                                self.scaler = joblib.load(scaler_path)
-                                scaler_loaded = True
-                                break
-                            except:
-                                continue
-                    
-                    if not scaler_loaded:
-                        raise Exception("No se pudo cargar scaler")
-                    
-                    # Cargar PCA
-                    pca_path = os.path.join(self.models_dir, model_files[1][1][0])
-                    if os.path.exists(pca_path):
-                        self.pca = joblib.load(pca_path)
-                    else:
-                        raise Exception("No se pudo cargar PCA")
-                    
-                    # Cargar clasificador
-                    classifier_path = os.path.join(self.models_dir, model_files[2][1][0])
-                    if os.path.exists(classifier_path):
-                        self.model = joblib.load(classifier_path)
-                    else:
-                        raise Exception("No se pudo cargar clasificador")
-                
-                # Verificar que los modelos funcionen
-                test_data = np.random.rand(1, len(COLUMNAS)).astype(np.float32)
-                test_scaled = self.scaler.transform(test_data)
-                test_pca = self.pca.transform(test_scaled)
-                _ = self.model.predict(test_pca)
-                
-                logging.info("✅ Modelos cargados correctamente")
-                return True
-                
-            except Exception as e:
-                logging.warning(f"⚠️ Error de compatibilidad: {e}")
-                logging.info("🛠️ Creando modelos compatibles automáticamente...")
-                return self._crear_modelos_compatibles()
-                
-        except Exception as e:
-            logging.error(f"❌ Error cargando modelos: {e}")
-            return self._crear_modelos_compatibles()
-    
-    def _crear_modelos_compatibles(self):
-        """Crear modelos compatibles con la versión actual de sklearn/joblib"""
-        try:
-            from sklearn.ensemble import RandomForestClassifier
-            from sklearn.preprocessing import StandardScaler
-            from sklearn.decomposition import PCA
-            
-            logging.info("🤖 Generando modelos compatibles...")
-            
-            # Datos dummy para entrenar
-            np.random.seed(42)
-            X_dummy = np.random.rand(1000, len(COLUMNAS)).astype(np.float32)
-            y_dummy = np.random.choice(['BENIGN', 'Bot', 'DDoS', 'PortScan', 'BruteForce', 'DoS', 'WebAttack', 'Unknown'], 1000)
-            
-            # Crear y entrenar scaler
-            self.scaler = StandardScaler()
-            X_scaled = self.scaler.fit_transform(X_dummy)
-            
-            # Crear y entrenar PCA
-            self.pca = PCA(n_components=min(50, X_scaled.shape[1]), random_state=42)
-            X_pca = self.pca.fit_transform(X_scaled)
-            
-            # Crear y entrenar clasificador
-            self.model = RandomForestClassifier(
-                n_estimators=100,
-                random_state=42,
-                max_depth=10,
-                min_samples_split=5,
-                n_jobs=1  # Evitar problemas de concurrencia
-            )
-            self.model.fit(X_pca, y_dummy)
-            
-            # Guardar modelos compatibles
-            joblib.dump(self.scaler, os.path.join(self.models_dir, "scaler.joblib"), compress=3)
-            joblib.dump(self.pca, os.path.join(self.models_dir, "pca_model.joblib"), compress=3)
-            joblib.dump(self.model, os.path.join(self.models_dir, "traffic_classifier.joblib"), compress=3)
-            
-            logging.info("✅ Modelos compatibles creados y cargados")
-            return True
-            
-        except Exception as e:
-            logging.error(f"❌ Error creando modelos compatibles: {e}")
-            return False

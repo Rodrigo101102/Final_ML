@@ -8,6 +8,13 @@ load_dotenv()
 class DatabaseConfig:
     """Configuración de la base de datos PostgreSQL"""
     
+    # Atributos de clase para acceso directo
+    NAME = os.getenv('DB_NAME', 'trafic_red')
+    USER = os.getenv('DB_USER', 'postgres')
+    HOST = os.getenv('DB_HOST', 'localhost')
+    PORT = int(os.getenv('DB_PORT', 5432))
+    PASSWORD = os.getenv('DB_PASSWORD', '')
+
     @classmethod
     def get_database_url(cls):
         """Obtiene URL de base de datos desde variables de entorno"""
@@ -15,15 +22,8 @@ class DatabaseConfig:
         database_url = os.getenv('DATABASE_URL')
         if database_url:
             return database_url
-        
         # Para desarrollo local usa variables individuales
-        HOST = os.getenv('DB_HOST', 'localhost')
-        PORT = int(os.getenv('DB_PORT', 5432))
-        NAME = os.getenv('DB_NAME', 'trafic_red')
-        USER = os.getenv('DB_USER', 'postgres')
-        PASSWORD = os.getenv('DB_PASSWORD', '')
-        
-        return f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/{NAME}"
+        return f"postgresql://{cls.USER}:{cls.PASSWORD}@{cls.HOST}:{cls.PORT}/{cls.NAME}"
     
     @classmethod
     def get_connection_string(cls):
