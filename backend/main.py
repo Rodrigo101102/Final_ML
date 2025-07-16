@@ -1,4 +1,4 @@
-eimport os
+import os
 import sys
 
 # Importar la aplicación FastAPI principal
