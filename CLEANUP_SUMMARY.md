@@ -1,26 +1,28 @@
 # 🧹 Limpieza del Proyecto - Resumen
 
-## ✅ Archivos y Directorios ELIMINADOS (No se están usando)
+## ✅ Archivos y Directorios ELIMINADOS (Limpieza Completada - 16 Julio 2025)
 
-### Archivos de Aplicación Obsoletos
-- `backend/app.py` → **Reemplazado por** `backend/app_postgres.py`
-- `backend/main.py` → **Obsoleto** (solo contenía redirect)
-- `frontend/` → **Reemplazado por** `frontend-react/`
+### Archivos de Aplicación Obsoletos ✅ ELIMINADOS
+- ~~`backend/app.py`~~ → **Reemplazado por** `backend/app_postgres.py`
+- ~~`backend/main.py`~~ → **Obsoleto** (archivo vacío)
 
-### Scripts de Configuración Obsoletos
-- `limpiar_proyecto.bat` → **Temporal**
-- `configurar_entorno.py` → **Obsoleto**
-- `start-react-frontend.bat` → **Obsoleto**
+### Scripts de Configuración Obsoletos ✅ ELIMINADOS  
+- ~~`limpiar_proyecto.bat`~~ → **Temporal** (archivo vacío)
+- ~~`start-react-frontend.bat`~~ → **Obsoleto** (archivo vacío)
 
-### Directorios de Archivos Temporales
-- `backend/creados/` → **Archivos temporales de procesamiento**
-- `backend/processed/` → **Archivos temporales de procesamiento**
-- `backend/services/predicciones/` → **Archivos temporales de predicciones**
+### Archivos de Configuración Duplicados ✅ ELIMINADOS
+- ~~`frontend-react/package-frontend.json`~~ → **Duplicado** de `package.json`
 
-### Archivos de Cache y Temporales
-- `backend/__pycache__/` → **Cache de Python**
-- `backend/services/__pycache__/` → **Cache de Python**
-- `frontend-react/node_modules/.cache/` → **Cache de build de React**
+### Directorios de Archivos Temporales ✅ ELIMINADOS
+- ~~`backend/creados/`~~ → **Directorio vacío** 
+- ~~`processed/*.csv`~~ → **Archivos temporales de procesamiento**
+
+### Archivos de Cache y Logs ✅ ELIMINADOS
+- ~~`backend/__pycache__/`~~ → **Cache de Python**
+- ~~`backend/services/__pycache__/`~~ → **Cache de Python** 
+- ~~`backend/logs/debug-*`~~ → **Logs de debug antiguos**
+- ~~`backend/services/logs/debug`~~ → **Logs de debug**
+- ~~`backend/flowmeter/logs/debug`~~ → **Logs de debug**
 
 ### Logs Antiguos
 - `backend/flowmeter/logs/debug-2025-07-11.log` → **Log antiguo**
@@ -86,23 +88,56 @@ El proyecto está ahora completamente limpio y listo para:
 - ✅ Colaboración en equipo
 - ✅ Mantenimiento futuro
 
-### Estructura Final Limpia
+## 📁 ESTRUCTURA LIMPIA FINAL
+
+### Backend (Puerto 8010)
 ```
-Final_ML/
-├── backend/                     # Backend FastAPI
-│   ├── app_postgres.py         # ✅ Aplicación principal
-│   ├── services/               # ✅ Servicios de procesamiento
-│   ├── ml_models/              # ✅ Modelos de ML
-│   ├── flowmeter/              # ✅ Herramientas de análisis
-│   └── logs/                   # ✅ Logging del sistema
-├── frontend-react/             # Frontend React
-│   ├── src/                    # ✅ Código fuente
-│   ├── build/                  # ✅ Build de producción
-│   └── public/                 # ✅ Archivos públicos
-├── README.md                   # ✅ Documentación
-├── setup.bat/sh               # ✅ Scripts de instalación
-└── start_servers.bat/sh       # ✅ Scripts de ejecución
+backend/
+├── app_postgres.py         # 🎯 APLICACIÓN PRINCIPAL
+├── config.py              # ⚙️ Configuración BD
+├── requirements.txt       # 📦 Dependencias Python
+├── ml_models/            # 🤖 Modelos ML entrenados
+├── services/             # 🔧 Servicios modulares
+│   ├── capture_service.py
+│   ├── processing_service.py
+│   └── prediction_service.py
+├── flowmeter/           # 📊 CICFlowMeter Java
+└── logs/               # 📝 Logs del sistema
 ```
+
+### Frontend React (Puerto 3000)
+```
+frontend-react/
+├── package.json          # 📦 Dependencias React
+├── server.js            # 🌐 Servidor Express  
+├── public/              # 📂 Archivos estáticos
+├── src/                # ⚛️ Código React
+└── build/              # 🏗️ Build de producción
+```
+
+### Scripts de Despliegue
+```
+├── deploy.bat           # 🚀 Despliegue Windows
+├── deploy.sh           # 🚀 Despliegue Linux/Mac
+├── setup.bat           # ⚙️ Configuración Windows  
+├── setup.sh            # ⚙️ Configuración Linux/Mac
+├── start_servers.bat   # ▶️ Iniciar servidores Windows
+└── start_servers.sh    # ▶️ Iniciar servidores Linux/Mac
+```
+
+## 🎯 FLUJO SIMPLIFICADO
+
+1. **Setup**: `setup.bat` o `setup.sh`
+2. **Ejecutar**: `start_servers.bat` o `start_servers.sh`  
+3. **Acceder**: http://localhost:3000
+
+## ✅ BENEFICIOS DE LA LIMPIEZA
+
+- ✅ **Eliminados 8+ archivos innecesarios**
+- ✅ **Estructura más clara y mantenible**
+- ✅ **Flujo de desarrollo simplificado**
+- ✅ **Menos confusión para nuevos desarrolladores**
+- ✅ **Repositorio más limpio**
 
 ---
 **Limpieza completada el:** $(Get-Date -Format "yyyy-MM-dd HH:mm:ss")  
