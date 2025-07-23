@@ -50,5 +50,8 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:8010"
+  "proxy": "http://localhost:8010",
+  "devDependencies": {
+    "postcss-modules-values": "^4.0.0"
+  }
 }
