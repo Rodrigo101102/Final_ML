@@ -1,6 +1,47 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 
-const ThreatSummary = ({ predictions, getSummary, getThreatColor }) => {
+const ThreatSummary = ({ predictions }) => {
+  // Memoize expensive calculations
+  const threatSummary = useMemo(() => {
+    if (!predictions || predictions.length === 0) return {};
+    
+    const threatCounts = {
+      'BENIGN': 0,
+      'Bot': 0,
+      'DDoS': 0,
+      'PortScan': 0,
+      'BruteForce': 0,
+      'DoS': 0,
+      'WebAttack': 0,
+      'Unknown': 0
+    };
+    
+    predictions.forEach(pred => {
+      if (threatCounts.hasOwnProperty(pred.label)) {
+        threatCounts[pred.label]++;
+      } else {
+        threatCounts['Unknown']++;
+      }
+    });
+    
+    return threatCounts;
+  }, [predictions]);
+
+  const getThreatColor = (threat, count) => {
+    if (count === 0) return 'bg-gray-50 text-gray-500 border-gray-200 opacity-60';
+    
+    switch(threat) {
+      case 'BENIGN': return 'bg-green-50 text-green-700 border-green-200 shadow-sm';
+      case 'Bot': 
+      case 'DDoS': 
+      case 'DoS': 
+      case 'BruteForce': return 'bg-red-50 text-red-700 border-red-200 shadow-sm';
+      case 'PortScan': 
+      case 'WebAttack': return 'bg-yellow-50 text-yellow-700 border-yellow-200 shadow-sm';
+      default: return 'bg-gray-50 text-gray-700 border-gray-200 shadow-sm';
+    }
+  };
+
   if (!predictions || predictions.length === 0) return null;
 
   return (
@@ -18,7 +59,7 @@ const ThreatSummary = ({ predictions, getSummary, getThreatColor }) => {
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-        {Object.entries(getSummary(predictions)).map(([threat, count]) => (
+        {Object.entries(threatSummary).map(([threat, count]) => (
           <div
             key={threat}
             className={`p-4 rounded-lg border-2 duration-200 hover:scale-105 ${getThreatColor(threat, count)}`}
@@ -62,4 +103,4 @@ const ThreatSummary = ({ predictions, getSummary, getThreatColor }) => {
   );
 };
 
-export default ThreatSummary;
+export default React.memo(ThreatSummary);
