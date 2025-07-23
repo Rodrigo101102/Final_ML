@@ -535,6 +535,78 @@ async def get_database_status():
             "port": DatabaseConfig.PORT
         }
 
+@app.get("/api/metrics")
+async def get_dashboard_metrics():
+    """Obtener métricas del dashboard para React"""
+    try:
+        with engine.connect() as conn:
+            # Métricas básicas
+            total_result = conn.execute(text("SELECT COUNT(*) as total FROM trafico_predic"))
+            total_records = total_result.fetchone().total
+            
+            # Distribución de predicciones
+            pred_result = conn.execute(text("""
+                SELECT prediction, COUNT(*) as count
+                FROM trafico_predic 
+                WHERE prediction IS NOT NULL
+                GROUP BY prediction
+                ORDER BY count DESC
+            """))
+            predictions_distribution = {}
+            for row in pred_result:
+                predictions_distribution[row.prediction] = row.count
+            
+            # Estadísticas por tipo de conexión
+            conn_result = conn.execute(text("""
+                SELECT connection_type, COUNT(*) as count
+                FROM trafico_predic 
+                GROUP BY connection_type
+            """))
+            connection_stats = {}
+            for row in conn_result:
+                connection_stats[row.connection_type] = row.count
+            
+            # Análisis por día (últimos 7 días)
+            daily_result = conn.execute(text("""
+                SELECT DATE(timestamp) as analysis_date, COUNT(*) as count
+                FROM trafico_predic 
+                WHERE timestamp >= CURRENT_DATE - INTERVAL '7 days'
+                GROUP BY DATE(timestamp)
+                ORDER BY analysis_date DESC
+            """))
+            daily_analysis = {}
+            for row in daily_result:
+                daily_analysis[row.analysis_date.isoformat() if row.analysis_date else None] = row.count
+            
+            # Amenazas detectadas recientemente
+            threats_result = conn.execute(text("""
+                SELECT prediction, COUNT(*) as count
+                FROM trafico_predic 
+                WHERE prediction != 'BENIGN' AND timestamp >= CURRENT_TIMESTAMP - INTERVAL '24 hours'
+                GROUP BY prediction
+                ORDER BY count DESC
+            """))
+            recent_threats = {}
+            for row in threats_result:
+                recent_threats[row.prediction] = row.count
+        
+        return {
+            "status": "success",
+            "total_records": total_records,
+            "predictions_distribution": predictions_distribution,
+            "connection_stats": connection_stats,
+            "daily_analysis": daily_analysis,
+            "recent_threats": recent_threats,
+            "timestamp": datetime.now().isoformat()
+        }
+        
+    except Exception as e:
+        return {
+            "status": "error",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8010)
