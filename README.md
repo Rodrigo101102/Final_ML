@@ -37,8 +37,8 @@ cd frontend-react && node server.js
 
 ---
 
-## 📖 **GUÍA COMPLETA:** 
-👉 **[INSTALACION_SIMPLE.md](INSTALACION_SIMPLE.md)** ← LEE ESTO PRIMERO
+## 📖 **DOCUMENTACIÓN ADICIONAL:** 
+👉 **[docs/INSTALACION_SIMPLE.md](docs/INSTALACION_SIMPLE.md)** ← Guía detallada paso a paso
 
 ---
 
@@ -54,66 +54,28 @@ cd frontend-react && node server.js
 ## 📁 **Estructura:**
 ```
 Final_ML/
+├── README.md           # Documentación principal
+├── docs/              # Documentación adicional
+├── scripts/           # Utilidades globales
 ├── backend/           # FastAPI + ML Models
+│   ├── scripts/       # Scripts de backend
+│   └── deployment/    # Archivos de deployment
 ├── frontend-react/    # React UI
-└── flowmeter/        # Network Analysis Tools
+└── processed/         # Archivos procesados
 ```
 
 ## 🆘 **¿Problemas?**
-1. Lee **[INSTALACION_SIMPLE.md](INSTALACION_SIMPLE.md)**
-2. Verifica versión Python: `python --version` 
+1. Lee **[docs/INSTALACION_SIMPLE.md](docs/INSTALACION_SIMPLE.md)** para guía detallada
+2. Verifica versión Python: `python --version` (debe ser 3.8-3.11)
 3. Revisa PostgreSQL funcionando
-4. Ejecuta: `pip install -r requirements.txt`
+4. Ejecuta: `pip install -r backend/requirements.txt`
+5. Usa el script de compatibilidad: `python scripts/check_compatibility.py`
 
 **¡Listo para usar!** 🎉
 
-### 3. Configurar variables de entorno
-Crear archivo `backend/.env`:
-```env
-DB_HOST=localhost
-DB_PORT=5432
-DB_NAME=trafic_red
-DB_USER=postgres
-DB_PASSWORD=tu_password
-```
+---
 
-### 4. Instalar dependencias del backend
-```bash
-cd backend
-pip install -r requirements.txt
-```
-
-### 5. Instalar dependencias del frontend
-```bash
-cd frontend-react
-npm install
-```
-
-## 🏃‍♂️ Uso
-
-### Opción 1: Scripts automáticos (Recomendado)
-
-**Windows:**
-```bash
-# Instalar todo
-.\setup.bat
-
-# Iniciar ambos servidores
-.\start_servers.bat
-```
-
-**Linux/Mac:**
-```bash
-# Instalar todo
-chmod +x setup.sh
-./setup.sh
-
-# Iniciar ambos servidores
-chmod +x start_servers.sh
-./start_servers.sh
-```
-
-### Opción 2: Manual
+## 🏃‍♂️ Uso Manual
 
 **Iniciar Backend:**
 ```bash
@@ -125,7 +87,7 @@ Backend disponible en: http://localhost:8010
 **Iniciar Frontend:**
 ```bash
 cd frontend-react
-npm start
+node server.js
 ```
 Frontend disponible en: http://localhost:3000
 
@@ -133,14 +95,19 @@ Frontend disponible en: http://localhost:3000
 
 ```
 Final_ML/
-├── backend/                 # API FastAPI
-│   ├── services/           # Servicios de captura y ML
-│   ├── ml_models/          # Modelos entrenados
-│   ├── flowmeter/          # CICFlowMeter
-│   └── requirements.txt    # Dependencias Python
+├── README.md                # Documentación principal
+├── docs/                   # Documentación adicional
+├── scripts/                # Utilidades globales del proyecto
+├── backend/                # API FastAPI
+│   ├── scripts/           # Scripts específicos del backend
+│   ├── deployment/        # Archivos de deployment
+│   ├── services/          # Servicios de captura y ML
+│   ├── ml_models/         # Modelos entrenados
+│   ├── flowmeter/         # CICFlowMeter
+│   └── requirements.txt   # Dependencias Python
 ├── frontend-react/         # Interfaz React
-│   ├── src/               # Código fuente
-│   └── package.json       # Dependencias Node.js
+│   ├── src/              # Código fuente
+│   └── package.json      # Dependencias Node.js
 └── processed/             # Archivos procesados
 ```
 
@@ -216,14 +183,13 @@ pip install -r requirements.txt
 ### **Si tienes errores durante la instalación o uso:**
 
 📖 **Documentación de ayuda disponible:**
-- `CORRECCIONES_APLICADAS.md` - Qué se corrigió y por qué
-- `SOLUCION_ERRORES.md` - Soluciones paso a paso para errores comunes
-- `python check_compatibility.py` - Verificación automática de compatibilidad
+- `docs/INSTALACION_SIMPLE.md` - Guía completa paso a paso
+- `python scripts/check_compatibility.py` - Verificación automática de compatibilidad
 
 ### **Errores más comunes y sus soluciones:**
 - ❌ **Error de compilación Cython/scikit-learn** → Usar Python 3.8-3.11
 - ❌ **psycopg2 connection failed** → Verificar PostgreSQL y credenciales
-- ❌ **ModuleNotFoundError** → Ejecutar `install.bat` o `./install.sh`
+- ❌ **ModuleNotFoundError** → Ejecutar `pip install -r backend/requirements.txt`
 - ❌ **Java not found** → Instalar Java 8+ y configurar JAVA_HOME
 
 ## 📄 Licencia
