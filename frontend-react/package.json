@@ -49,6 +49,7 @@
   "proxy": "http://localhost:8010",
   "devDependencies": {
     "postcss-flexbugs-fixes": "^5.0.2",
+    "postcss-modules-values": "^4.0.0",
     "postcss-normalize": "^13.0.1",
     "postcss-preset-env": "^10.2.4"
   }

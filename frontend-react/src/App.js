@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import BACKEND_URL from './config';
 
+// Import components
+import Header from './components/Layout/Header';
+import Alert from './components/Layout/Alert';
+
 // Configure axios with the backend URL
 axios.defaults.baseURL = BACKEND_URL;
 
@@ -196,69 +200,10 @@ function App() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br">
-      {/* Header */}
-      <header className="header-gradient">
-        <div className="container py-4">
-          <nav className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-primary-500 p-2 rounded-lg">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-2xl font-bold text-white">ML Traffic Analyzer</h1>
-                <p className="text-gray-300 text-sm">Análisis Inteligente de Tráfico de Red</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-4">
-              <div className="md:flex items-center space-x-2 text-gray-300" style={{ display: 'none' }}>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
-                <span className="text-sm font-medium">Powered by Machine Learning</span>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-green-400 text-sm font-medium">Sistema Activo</span>
-              </div>
-            </div>
-          </nav>
-        </div>
-      </header>
+      <Header />
       
       <main className="container py-8 space-y-8">
-        {/* Alert */}
-        {alert && (
-          <div className={`alert-modern animate-fade-in ${
-            alert.type === 'success' ? 'alert-success' : 
-            alert.type === 'error' ? 'alert-error' : 'alert-info'
-          }`}>
-            <div className="flex">
-              <svg className="w-5 h-5 mr-2 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                {alert.type === 'success' ? (
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                ) : alert.type === 'error' ? (
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                ) : (
-                  <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
-                )}
-              </svg>
-              <span className="font-medium">{alert.message}</span>
-            </div>
-            <button
-              onClick={() => setAlert(null)}
-              className="text-gray-400 hover:text-gray-600"
-              style={{ marginLeft: '16px' }}
-            >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
-              </svg>
-            </button>
-          </div>
-        )}
+        <Alert alert={alert} onClose={() => setAlert(null)} />
 
         {/* Database Status */}
         {databaseStatus && (
