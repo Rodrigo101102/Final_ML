@@ -89,15 +89,13 @@ class PredictionService:
         # Columnas binarias que se manejan por separado
         self.binary_features = ['FIN Flag Count', 'PSH Flag Count']
         
-        # Etiquetas para las predicciones - expandido para todas las clases
+        # Etiquetas para las predicciones - SOLO las especificadas por el usuario
         self.ETIQUETAS = {
             0: 'BENIGN',
-            1: 'Bot',
             2: 'Brute Force',
             3: 'DDoS',
             4: 'DoS',
             7: 'Port Scan',
-            8: 'Web Attack',
             9: 'Unknown'
         }
 
