@@ -12,7 +12,7 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+  background: linear-gradient(90deg, #1a237e 0%, #0d133d 50%, #233876 100%);
   min-height: 100vh;
 }
 
@@ -567,6 +567,7 @@ code {
   background: #e5e7eb;
   outline: none;
   -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
 }
 

@@ -7,45 +7,58 @@ const Header = () => {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <header className="header-gradient">
-      <div className="container py-6">
-        <nav className="flex items-center justify-between">
-          <div className="flex items-center space-x-4">
-            <Link to="/" className="flex items-center space-x-4 hover:opacity-80 transition-opacity">
-              <div className="bg-primary-500 p-3 rounded-xl shadow-lg">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <header className="bg-gradient-to-r from-indigo-900 via-blue-900 to-blue-700 shadow-lg">
+      <div className="container py-2">
+        <nav className="flex items-center justify-between min-h-[48px]">
+          <div className="flex items-center space-x-2">
+            <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
+              <div className="bg-primary-500 p-1.5 rounded-xl shadow-lg">
+                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">ML Traffic Analyzer</h1>
-                <p className="text-gray-300 text-sm">Análisis Inteligente de Tráfico de Red</p>
+                <h1 className="text-xl font-bold text-white tracking-wide mb-0.5">Análisis de Tráfico de Red</h1>
+                <p className="text-gray-300 text-xs">Random Forest</p>
               </div>
             </Link>
           </div>
           
-          <div className="flex items-center space-x-6">
+          <div className="flex items-center space-x-5">
             {/* Navigation Menu */}
             <nav className="hidden md:flex items-center space-x-1">
               <Link
                 to="/"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                  isActive('/') 
-                    ? 'bg-white bg-opacity-20 text-white' 
-                    : 'text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10'
+                  isActive('/')
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-300 hover:text-white hover:bg-blue-500 hover:bg-opacity-70'
                 }`}
+                style={{ minWidth: 80, textAlign: 'center' }}
               >
-                Dashboard
+                Home
               </Link>
               <Link
                 to="/analysis"
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                  isActive('/analysis') 
-                    ? 'bg-white bg-opacity-20 text-white' 
-                    : 'text-gray-300 hover:text-white hover:bg-white hover:bg-opacity-10'
+                  isActive('/analysis')
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-300 hover:text-white hover:bg-blue-500 hover:bg-opacity-70'
                 }`}
+                style={{ minWidth: 80, textAlign: 'center' }}
               >
                 Análisis
+              </Link>
+              <Link
+                to="/dashboard"
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
+                  isActive('/dashboard')
+                    ? 'bg-blue-500 text-white'
+                    : 'text-gray-300 hover:text-white hover:bg-blue-500 hover:bg-opacity-70'
+                }`}
+                style={{ minWidth: 100, textAlign: 'center' }}
+              >
+                Dashboard
               </Link>
             </nav>
 
@@ -63,12 +76,7 @@ const Header = () => {
               </Link>
             </div>
 
-            <div className="hidden lg:flex items-center space-x-2 text-gray-300">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-              <span className="text-sm font-medium">Powered by ML</span>
-            </div>
+            {/* Powered by ML badge removed as requested */}
             
             <div className="flex items-center space-x-2 bg-green-500 bg-opacity-20 px-3 py-2 rounded-full">
               <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
