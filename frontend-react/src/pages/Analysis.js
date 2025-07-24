@@ -98,19 +98,35 @@ function Analysis() {
 
   // Helper functions for result display
   // Ahora cuenta usando el campo 'Prediction' (el que se muestra en la tabla)
+  // Mapeo para normalizar labels del backend y frontend
+  const LABEL_MAP = {
+    'BENIGN': 'BENIGN',
+    'Bot': 'Bot',
+    'BruteForce': 'Brute Force',
+    'Brute Force': 'Brute Force',
+    'DDoS': 'DDoS',
+    'DoS': 'DoS',
+    'PortScan': 'Port Scan',
+    'Port Scan': 'Port Scan',
+    'WebAttack': 'Web Attack',
+    'Web Attack': 'Web Attack',
+    'Unknown': 'Unknown'
+  };
+
   const getSummary = (rows) => {
     const threatCounts = {
       'BENIGN': 0,
       'Bot': 0,
+      'Brute Force': 0,
       'DDoS': 0,
-      'PortScan': 0,
-      'BruteForce': 0,
       'DoS': 0,
-      'WebAttack': 0,
+      'Port Scan': 0,
+      'Web Attack': 0,
       'Unknown': 0
     };
     rows.forEach(row => {
-      const label = row.Prediction;
+      const rawLabel = row.Prediction;
+      const label = LABEL_MAP[rawLabel] || 'Unknown';
       if (threatCounts.hasOwnProperty(label)) {
         threatCounts[label]++;
       } else {
@@ -309,88 +325,89 @@ function Analysis() {
       )}
 
       {/* Results Section */}
-      {results && (
-        <div className="space-y-8 animate-fade-in">
-          {/* Display Results as Cards */}
-          <div className="card-modern p-8 bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl shadow-xl">
-            <h3 className="text-2xl font-bold mb-8 text-gray-800 tracking-tight text-center">Resultado del Análisis</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center max-w-4xl mx-auto">
-              {[ 
-                {
-                  key: 'BENIGN',
-                  label: 'BENIGN',
-                  color: 'bg-green-100 text-green-800 border-green-200',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#22c55e" /><path d="M8 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-                  ),
-                  description: 'Tráfico seguro'
-                },
-                {
-                  key: 'Bot',
-                  label: 'Bot',
-                  color: 'bg-red-100 text-red-800 border-red-200',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><circle cx="9" cy="10" r="1.5" fill="#fff" /><circle cx="15" cy="10" r="1.5" fill="#fff" /><rect x="8" y="14" width="8" height="2" rx="1" fill="#fff" /></svg>
-                  ),
-                  description: 'Actividad de Bot'
-                },
-                {
-                  key: 'DDoS',
-                  label: 'DDoS',
-                  color: 'bg-red-100 text-red-800 border-red-200',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><path d="M8 12h8M12 8v8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-                  ),
-                  description: 'Ataques distribuidos'
-                },
-                {
-                  key: 'PortScan',
-                  label: 'PortScan',
-                  color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#f59e42" /><path d="M12 8v4l3 3" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-                  ),
-                  description: 'Escaneo de puertos'
-                },
-                {
-                  key: 'BruteForce',
-                  label: 'BruteForce',
-                  color: 'bg-red-100 text-red-800 border-red-200',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#ef4444" /><path d="M8 16l8-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-                  ),
-                  description: 'Ataques por fuerza bruta'
-                },
-                {
-                  key: 'DoS',
-                  label: 'DoS',
-                  color: 'bg-red-100 text-red-800 border-red-200',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><rect x="8" y="11" width="8" height="2" rx="1" fill="#fff" /></svg>
-                  ),
-                  description: 'Ataques de denegación'
-                },
-                {
-                  key: 'WebAttack',
-                  label: 'WebAttack',
-                  color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#f59e42" /><path d="M8 12h8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-                  ),
-                  description: 'Ataques web'
-                },
-                {
-                  key: 'Unknown',
-                  label: 'Unknown',
-                  color: 'bg-gray-200 text-gray-800 border-gray-300',
-                  icon: (
-                    <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#6b7280" /><text x="12" y="16" textAnchor="middle" fontSize="8" fill="#fff">?</text></svg>
-                  ),
-                  description: 'Tipo desconocido'
-                }
-              ].map(card => {
-                const summary = getSummary(results.full_data || []);
-                return (
+      {results && (() => {
+        const summaryCards = [
+          {
+            key: 'BENIGN',
+            label: 'BENIGN',
+            color: 'bg-green-100 text-green-800 border-green-200',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#22c55e" /><path d="M8 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            ),
+            description: 'Tráfico seguro'
+          },
+          {
+            key: 'Bot',
+            label: 'Bot',
+            color: 'bg-red-100 text-red-800 border-red-200',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><circle cx="9" cy="10" r="1.5" fill="#fff" /><circle cx="15" cy="10" r="1.5" fill="#fff" /><rect x="8" y="14" width="8" height="2" rx="1" fill="#fff" /></svg>
+            ),
+            description: 'Actividad de Bot'
+          },
+          {
+            key: 'Brute Force',
+            label: 'Brute Force',
+            color: 'bg-red-100 text-red-800 border-red-200',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#ef4444" /><path d="M8 16l8-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
+            ),
+            description: 'Ataques por fuerza bruta'
+          },
+          {
+            key: 'DDoS',
+            label: 'DDoS',
+            color: 'bg-red-100 text-red-800 border-red-200',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><path d="M8 12h8M12 8v8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
+            ),
+            description: 'Ataques distribuidos'
+          },
+          {
+            key: 'DoS',
+            label: 'DoS',
+            color: 'bg-red-100 text-red-800 border-red-200',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><rect x="8" y="11" width="8" height="2" rx="1" fill="#fff" /></svg>
+            ),
+            description: 'Ataques de denegación'
+          },
+          {
+            key: 'Port Scan',
+            label: 'Port Scan',
+            color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#f59e42" /><path d="M12 8v4l3 3" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
+            ),
+            description: 'Escaneo de puertos'
+          },
+          {
+            key: 'Web Attack',
+            label: 'Web Attack',
+            color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#f59e42" /><path d="M8 12h8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
+            ),
+            description: 'Ataques web'
+          },
+          {
+            key: 'Unknown',
+            label: 'Unknown',
+            color: 'bg-gray-200 text-gray-800 border-gray-300',
+            icon: (
+              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#6b7280" /><text x="12" y="16" textAnchor="middle" fontSize="8" fill="#fff">?</text></svg>
+            ),
+            description: 'Tipo desconocido'
+          }
+        ];
+        const summary = getSummary(results.full_data || []);
+        return (
+          <div className="space-y-8 animate-fade-in">
+            {/* Display Results as Cards */}
+            <div className="card-modern p-8 bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl shadow-xl">
+              <h3 className="text-2xl font-bold mb-8 text-gray-800 tracking-tight text-center">Resultado del Análisis</h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center max-w-4xl mx-auto">
+                {summaryCards.map(card => (
                   <div
                     key={card.key}
                     className={`flex items-center gap-3 p-3 rounded-xl border ${card.color} shadow min-w-[160px] max-w-[210px] w-full transition-transform duration-200 hover:scale-105 hover:shadow-lg`}
@@ -404,11 +421,10 @@ function Analysis() {
                       <div className="text-xs text-gray-500 font-medium mt-0.5">{card.description}</div>
                     </div>
                   </div>
-                );
-              })}
+                ))}
+              </div>
+              <div className="mt-8 text-base text-gray-600 text-center font-medium">{results.summary.total_flows} flujos procesados &bull; {results.summary.columns_count} características procesadas</div>
             </div>
-            <div className="mt-8 text-base text-gray-600 text-center font-medium">{results.summary.total_flows} flujos procesados &bull; {results.summary.columns_count} características procesadas</div>
-          </div>
           {/* Tabla de resultados: profesional y responsiva */}
           {results.full_data && results.full_data.length > 0 && (
             <div className="card-modern p-6">
@@ -445,7 +461,17 @@ function Analysis() {
                               ...allCols.filter(col => !backendColOrder.includes(col))
                             ];
                             return ordered.map((key, j) => {
-                              const val = row[key];
+                              let val = row[key];
+                              // Normalizar label para mostrarlo igual que en las tarjetas
+                              if (key === 'Prediction') {
+                                const normalized = LABEL_MAP[val] || val;
+                                const isBenign = normalized === 'BENIGN';
+                                return (
+                                  <td key={j} className="px-4 py-2 text-center border-b border-gray-100 whitespace-nowrap" style={{color: isBenign ? '#16a34a' : '#dc2626', fontWeight: 'bold'}}>
+                                    {normalized}
+                                  </td>
+                                );
+                              }
                               if (key === 'Confidence' && typeof val === 'number') {
                                 return (
                                   <td key={j} className="px-4 py-2 text-center border-b border-gray-100 whitespace-nowrap">
@@ -457,14 +483,6 @@ function Analysis() {
                                     }}>
                                       {`${Math.round(val * 100)}%`}
                                     </span>
-                                  </td>
-                                );
-                              }
-                              if (key === 'Prediction') {
-                                const isBenign = String(val).toUpperCase() === 'BENIGN';
-                                return (
-                                  <td key={j} className="px-4 py-2 text-center border-b border-gray-100 whitespace-nowrap" style={{color: isBenign ? '#16a34a' : '#dc2626', fontWeight: 'bold'}}>
-                                    {val}
                                   </td>
                                 );
                               }
@@ -500,7 +518,7 @@ function Analysis() {
           )}
           {/* Historial de análisis oculto por requerimiento */}
         </div>
-      )}
+      )})()}
     </div>
     </>
   );

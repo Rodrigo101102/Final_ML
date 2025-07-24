@@ -93,13 +93,11 @@ class PredictionService:
         self.ETIQUETAS = {
             0: 'BENIGN',
             1: 'Bot',
-            2: 'DDoS',
-            3: 'PortScan',
-            4: 'BruteForce',
-            5: 'Infiltration',
-            6: 'DoS',
-            7: 'WebAttack',
-            8: 'Heartbleed',
+            2: 'Brute Force',
+            3: 'DDoS',
+            4: 'DoS',
+            7: 'Port Scan',
+            8: 'Web Attack',
             9: 'Unknown'
         }
 
