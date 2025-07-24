@@ -1,4 +1,33 @@
 import React from 'react';
+import {
+  Container,
+  Paper,
+  Typography,
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Avatar,
+  Stack,
+  Chip,
+  Stepper,
+  Step,
+  StepLabel,
+  StepContent,
+  useTheme,
+  useMediaQuery
+} from '@mui/material';
+import {
+  PlayArrow,
+  NetworkCheck,
+  DataObject,
+  FilterList,
+  Transform,
+  Psychology,
+  ArrowDownward
+} from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
+import { Link } from 'react-router-dom';
 import Header from '../components/Layout/Header';
 import wiresharkImg from '../assets/images/wireshark.png'; 
 import flometerImg from '../assets/images/flometer.png'; 
@@ -6,176 +35,273 @@ import preprocesadorImg from '../assets/images/preprocesador.png';
 import pcaImg from '../assets/images/pca.png'; 
 import modeloImg from '../assets/images/modelo_random_forest.png'; 
 
+// Styled components
+const GradientBackground = styled(Box)(({ theme }) => ({
+  background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
+  minHeight: '80vh',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  padding: theme.spacing(6, 2),
+}));
+
+const ProcessCard = styled(Paper)(({ theme }) => ({
+  background: 'linear-gradient(145deg, #2a2a3e 0%, #1e1e2e 100%)',
+  border: `1px solid ${theme.palette.grey[700]}`,
+  borderRadius: theme.spacing(2),
+  padding: theme.spacing(6),
+  maxWidth: '1000px',
+  width: '100%',
+  color: 'white',
+  boxShadow: '0 20px 40px rgba(0, 0, 0, 0.3)',
+}));
+
+const ProcessStep = styled(Card)(({ theme }) => ({
+  background: 'rgba(255, 255, 255, 0.05)',
+  backdropFilter: 'blur(10px)',
+  border: `1px solid rgba(255, 255, 255, 0.1)`,
+  borderRadius: theme.spacing(2),
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    transform: 'translateY(-4px)',
+    boxShadow: '0 8px 25px rgba(59, 130, 246, 0.3)',
+    border: `1px solid rgba(59, 130, 246, 0.4)`,
+  },
+}));
+
+const StyledAvatar = styled(Avatar)(({ theme }) => ({
+  width: 96,
+  height: 96,
+  backgroundColor: 'rgba(59, 130, 246, 0.1)',
+  border: `2px solid rgba(59, 130, 246, 0.3)`,
+  marginBottom: theme.spacing(2),
+}));
+
+const ArrowIcon = styled(ArrowDownward)(({ theme }) => ({
+  fontSize: 48,
+  color: theme.palette.primary.main,
+  opacity: 0.8,
+  animation: 'bounce 2s infinite',
+  '@keyframes bounce': {
+    '0%, 20%, 50%, 80%, 100%': {
+      transform: 'translateY(0)',
+    },
+    '40%': {
+      transform: 'translateY(-10px)',
+    },
+    '60%': {
+      transform: 'translateY(-5px)',
+    },
+  },
+}));
+
+const GradientButton = styled(Button)(({ theme }) => ({
+  background: 'linear-gradient(45deg, #4CAF50 30%, #45a049 90%)',
+  borderRadius: theme.spacing(1),
+  padding: theme.spacing(1.5, 4),
+  fontSize: '1.2rem',
+  fontWeight: 'bold',
+  textTransform: 'none',
+  boxShadow: '0 4px 15px rgba(76, 175, 80, 0.3)',
+  transition: 'all 0.3s ease',
+  '&:hover': {
+    background: 'linear-gradient(45deg, #45a049 30%, #388e3c 90%)',
+    transform: 'translateY(-2px)',
+    boxShadow: '0 6px 20px rgba(76, 175, 80, 0.4)',
+  },
+}));
+
 function Welcome() {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+
+  const processSteps = [
+    {
+      title: 'Captura red con Wireshark',
+      description: 'Captura de tráfico de red en tiempo real',
+      image: wiresharkImg,
+      icon: <NetworkCheck />,
+      color: '#ff6b6b'
+    },
+    {
+      title: 'Flometer (.pcap)',
+      description: 'Procesamiento de archivos de captura',
+      image: flometerImg,
+      icon: <DataObject />,
+      color: '#4ecdc4'
+    },
+    {
+      title: 'Selección de Columnas',
+      description: 'Filtrado y selección de características relevantes',
+      image: preprocesadorImg,
+      icon: <FilterList />,
+      color: '#45b7d1'
+    },
+    {
+      title: 'PCA .joblib',
+      description: 'Análisis de componentes principales',
+      image: pcaImg,
+      icon: <Transform />,
+      color: '#96ceb4'
+    },
+    {
+      title: 'Modelo Random Forest .joblib',
+      description: 'Clasificación con Machine Learning',
+      image: modeloImg,
+      icon: <Psychology />,
+      color: '#ffeaa7'
+    }
+  ];
+
   return (
     <>
       <Header />
-
-      <main className="flex flex-col items-center justify-center min-h-[80vh] bg-gradient-to-b from-gray-900 to-gray-700 py-16 px-6">
-        <section className="bg-gray-800 rounded-lg shadow-xl border border-gray-700 w-full max-w-5xl p-8">
-          
-          {/* Título */}
-          <h1 className="text-3xl font-semibold text-white mb-6 text-center">
-             Proceso de detección
-          </h1>
-
-          {/* Descripción */}
-          <p className="text-lg text-gray-300 mb-8 text-center max-w-xl leading-relaxed">
-            Este diagrama representa el flujo del proceso de Machine Learning con las siguientes tecnologías:
-            <span className="font-semibold text-blue-400">Random Forest, PCA y Redes Neuronales</span>.
-          </p>
-
-          {/* Diagrama de secuencia vertical */}
-          <div className="flex flex-col items-center justify-center space-y-12">
-
-            {/* Paso 1 - Captura con Wireshark */}
-            <div className="flex flex-col items-center">
-              <img
-                src={wiresharkImg}
-                alt="Wireshark"
-                style={{ width: '96px', height: '96px', objectFit: 'contain' }} // Tamaño consistente para todas las imágenes
-                className="mb-6"
-              />
-              <p className="text-white text-center">Captura red con Wireshark</p>
-            </div>
-
-            {/* Flecha */}
-            <div className="flex items-center justify-center">
-              <svg
-                className="w-12 h-12 text-blue-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+      
+      <GradientBackground>
+        <Container maxWidth="lg">
+          <ProcessCard elevation={24}>
+            {/* Header */}
+            <Box textAlign="center" mb={6}>
+              <Typography 
+                variant="h3" 
+                component="h1" 
+                fontWeight="bold" 
+                color="white" 
+                gutterBottom
+                sx={{ 
+                  textShadow: '2px 2px 4px rgba(0,0,0,0.5)',
+                  mb: 3 
+                }}
               >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 2L12 22M12 22L7 17M12 22L17 17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            {/* Paso 2 - Flometer */}
-            <div className="flex flex-col items-center">
-              <img
-                src={flometerImg}
-                alt="Flometer"
-                style={{ width: '96px', height: '96px', objectFit: 'contain' }} // Tamaño consistente para todas las imágenes
-                className="mb-6"
-              />
-              <p className="text-white text-center">Flometer (.pcap)</p>
-            </div>
-
-            {/* Flecha */}
-            <div className="flex items-center justify-center">
-              <svg
-                className="w-12 h-12 text-blue-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+                Proceso de Detección
+              </Typography>
+              
+              <Typography 
+                variant="h6" 
+                color="rgba(255, 255, 255, 0.8)" 
+                sx={{ 
+                  maxWidth: 600, 
+                  mx: 'auto', 
+                  mb: 3,
+                  lineHeight: 1.6 
+                }}
               >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 2L12 22M12 22L7 17M12 22L17 17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            {/* Paso 3 - Selección de columnas */}
-            <div className="flex flex-col items-center">
-              <img
-                src={preprocesadorImg}
-                alt="Selección de Columna"
-                style={{ width: '96px', height: '96px', objectFit: 'contain' }} // Tamaño consistente para todas las imágenes
-                className="mb-6"
-              />
-              <p className="text-white text-center">Selección de Columnas</p>
-            </div>
-
-            {/* Flecha */}
-            <div className="flex items-center justify-center">
-              <svg
-                className="w-12 h-12 text-blue-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+                Este diagrama representa el flujo del proceso de Machine Learning con las siguientes tecnologías:
+              </Typography>
+              
+              <Stack 
+                direction="row" 
+                spacing={1} 
+                justifyContent="center" 
+                flexWrap="wrap"
+                gap={1}
               >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 2L12 22M12 22L7 17M12 22L17 17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
+                <Chip 
+                  label="Random Forest" 
+                  color="primary" 
+                  variant="outlined" 
+                  sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
                 />
-              </svg>
-            </div>
+                <Chip 
+                  label="PCA" 
+                  color="secondary" 
+                  variant="outlined" 
+                  sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+                />
+                <Chip 
+                  label="Redes Neuronales" 
+                  color="info" 
+                  variant="outlined" 
+                  sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.3)' }}
+                />
+              </Stack>
+            </Box>
 
-            {/* Paso 4 - Preprocesamiento */}
-            <div className="flex flex-col items-center">
-              <img
-                src={pcaImg}
-                alt="PCA"
-                style={{ width: '96px', height: '96px', objectFit: 'contain' }} // Tamaño consistente para todas las imágenes
-                className="mb-6"
-              />
-              <p className="text-white text-center">PCA .joblib</p>
-            </div>
+            {/* Process Steps */}
+            {isMobile ? (
+              // Mobile: Stepper vertical
+              <Stepper orientation="vertical" sx={{ mb: 6 }}>
+                {processSteps.map((step, index) => (
+                  <Step key={index} active={true}>
+                    <StepLabel
+                      StepIconComponent={() => (
+                        <StyledAvatar>
+                          <img
+                            src={step.image}
+                            alt={step.title}
+                            style={{ width: '60px', height: '60px', objectFit: 'contain' }}
+                          />
+                        </StyledAvatar>
+                      )}
+                    >
+                      <Typography variant="h6" color="white" fontWeight="bold">
+                        {step.title}
+                      </Typography>
+                    </StepLabel>
+                    <StepContent>
+                      <Typography color="rgba(255, 255, 255, 0.7)">
+                        {step.description}
+                      </Typography>
+                    </StepContent>
+                  </Step>
+                ))}
+              </Stepper>
+            ) : (
+              // Desktop: Layout vertical centrado
+              <Stack spacing={4} alignItems="center" sx={{ mb: 6 }}>
+                {processSteps.map((step, index) => (
+                  <React.Fragment key={index}>
+                    <ProcessStep elevation={4}>
+                      <CardContent sx={{ textAlign: 'center', p: 4 }}>
+                        <StyledAvatar sx={{ mx: 'auto' }}>
+                          <img
+                            src={step.image}
+                            alt={step.title}
+                            style={{ width: '60px', height: '60px', objectFit: 'contain' }}
+                          />
+                        </StyledAvatar>
+                        
+                        <Typography 
+                          variant="h6" 
+                          color="white" 
+                          fontWeight="bold" 
+                          gutterBottom
+                        >
+                          {step.title}
+                        </Typography>
+                        
+                        <Typography 
+                          variant="body2" 
+                          color="rgba(255, 255, 255, 0.7)"
+                        >
+                          {step.description}
+                        </Typography>
+                      </CardContent>
+                    </ProcessStep>
+                    
+                    {/* Arrow between steps (except last) */}
+                    {index < processSteps.length - 1 && (
+                      <ArrowIcon />
+                    )}
+                  </React.Fragment>
+                ))}
+              </Stack>
+            )}
 
-            {/* Flecha */}
-            <div className="flex items-center justify-center">
-              <svg
-                className="w-12 h-12 text-blue-500"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
+            {/* Action Button */}
+            <Box textAlign="center">
+              <GradientButton
+                component={Link}
+                to="/analysis"
+                startIcon={<PlayArrow />}
+                size="large"
               >
-                <path
-                  fillRule="evenodd"
-                  clipRule="evenodd"
-                  d="M12 2L12 22M12 22L7 17M12 22L17 17"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-
-            {/* Paso 5 - Modelo Random Forest */}
-            <div className="flex flex-col items-center">
-              <img
-                src={modeloImg}
-                alt="Modelo Random Forest"
-                style={{ width: '96px', height: '96px', objectFit: 'contain' }} // Tamaño consistente para todas las imágenes
-                className="mb-6"
-              />
-              <p className="text-white text-center">Modelo Random Forest .joblib</p>
-            </div>
-          </div>
-
-          {/* Botones */}
-          <div className="flex justify-center gap-8 mt-8 w-full">
-            <a
-              href="/analysis"
-              className="px-8 py-3 rounded-md bg-green-600 hover:bg-green-700 text-white font-semibold text-xl shadow-lg transition-all duration-300 transform hover:scale-105"
-              aria-label="Nuevo Análisis"
-            >
-              Nuevo Análisis
-            </a>
-          </div>
-        </section>
-      </main>
+                Nuevo Análisis
+              </GradientButton>
+            </Box>
+          </ProcessCard>
+        </Container>
+      </GradientBackground>
     </>
   );
 }

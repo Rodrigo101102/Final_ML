@@ -1,39 +1,91 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-// import BACKEND_URL from '../config';
+import {
+  Container,
+  Paper,
+  Typography,
+  TextField,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+  Button,
+  Box,
+  Grid,
+  Card,
+  CardContent,
+  LinearProgress,
+  CircularProgress,
+  Alert,
+  Chip,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Pagination,
+  Slider,
+  Stack,
+  Divider,
+  IconButton,
+  Collapse
+} from '@mui/material';
+import {
+  PlayArrow,
+  Security,
+  Warning,
+  Error,
+  SmartToy,
+  Shield,
+  BugReport,
+  NetworkCheck,
+  Computer,
+  Close,
+  Storage,
+  CheckCircle,
+  ErrorOutline
+} from '@mui/icons-material';
+import { styled } from '@mui/material/styles';
 import Header from '../components/Layout/Header';
-import Alert from '../components/Layout/Alert';
+
+// Styled components
+const GradientCard = styled(Card)(({ theme }) => ({
+  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+  color: 'white',
+  '& .MuiCardContent-root': {
+    padding: theme.spacing(3),
+  },
+}));
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(3),
+  background: 'linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%)',
+  borderRadius: theme.spacing(2),
+  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.1)',
+}));
 
 function Analysis() {
   const [backendStatus, setBackendStatus] = useState(null);
-  // const [history, setHistory] = useState([]);
   const [duration, setDuration] = useState(20);
   const [connectionType, setConnectionType] = useState('wifi');
-  // Eliminado: detectedConnection y auto-detección, ya que el backend no expone /network/interfaces
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [progress, setProgress] = useState({ message: '', percentage: 0 });
   const [results, setResults] = useState(null);
   const [alert, setAlert] = useState(null);
   const [databaseStatus, setDatabaseStatus] = useState(null);
-  // const [showAllRecords, setShowAllRecords] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const recordsPerPage = 10;
 
-
   // Check database status on load
   useEffect(() => {
-    // Consultar estado del backend
     axios.get('/api/test').then(res => setBackendStatus(res.data)).catch(() => setBackendStatus(null));
-    // Consultar historial
-    // axios.get('/history').then(res => setHistory(res.data.history || [])).catch(() => setHistory([]));
     checkDatabaseStatus();
-    // Eliminada la auto-detección de interfaces
   }, []);
 
   // Reset pagination when results change
   useEffect(() => {
     setCurrentPage(1);
-    // setShowAllRecords(false);
   }, [results]);
 
   const checkDatabaseStatus = async () => {
@@ -83,7 +135,7 @@ function Analysis() {
             `Análisis completado: ${response.data.summary.total_flows} flujos procesados con ${response.data.summary.columns_count} características`,
             'success'
           );
-          checkDatabaseStatus(); // Update database status
+          checkDatabaseStatus();
         }, 1000);
       } else {
         throw new Error(response.data.error || 'Error desconocido en el análisis');
@@ -97,8 +149,6 @@ function Analysis() {
   };
 
   // Helper functions for result display
-  // Ahora cuenta usando el campo 'Prediction' (el que se muestra en la tabla)
-  // Mapeo para normalizar labels del backend y frontend
   const LABEL_MAP = {
     'BENIGN': 'BENIGN',
     'Bot': 'Bot',
@@ -136,390 +186,401 @@ function Analysis() {
     return threatCounts;
   };
 
+  const getThreatIcon = (threatType) => {
+    const iconMap = {
+      'BENIGN': <CheckCircle color="success" />,
+      'Bot': <SmartToy color="error" />,
+      'Brute Force': <Security color="error" />,
+      'DDoS': <NetworkCheck color="error" />,
+      'DoS': <Warning color="error" />,
+      'Port Scan': <BugReport color="warning" />,
+      'Web Attack': <Computer color="warning" />,
+      'Unknown': <ErrorOutline color="disabled" />
+    };
+    return iconMap[threatType] || <ErrorOutline color="disabled" />;
+  };
+
+  const getThreatColor = (threatType) => {
+    const colorMap = {
+      'BENIGN': 'success',
+      'Bot': 'error',
+      'Brute Force': 'error',
+      'DDoS': 'error',
+      'DoS': 'error',
+      'Port Scan': 'warning',
+      'Web Attack': 'warning',
+      'Unknown': 'default'
+    };
+    return colorMap[threatType] || 'default';
+  };
+
   return (
     <>
       <Header />
-      <div className="container py-8 space-y-8">
-      {/* Estado del backend */}
-      {backendStatus && (
-        <div className="card-modern p-4 bg-blue-50 border border-blue-200">
-          <div className="flex items-center space-x-2">
-            <span className="font-semibold text-blue-800">Backend:</span>
-            <span className="text-blue-700">{backendStatus.message}</span>
-            <span className="text-xs text-blue-500">{backendStatus.timestamp}</span>
-          </div>
-        </div>
-      )}
-      <Alert alert={alert} onClose={() => setAlert(null)} />
-
-      {/* Database Status */}
-      {databaseStatus && (
-        <div className="card-modern p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-              <svg className="w-5 h-5 mr-2 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 7v10c0 2.21 1.79 4 4 4h8c0-2.21-1.79-4-4-4H4V7z" />
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 3H4c-1.1 0-2 .9-2 2v10" />
-              </svg>
-              Estado de la Base de Datos
-            </h3>
-            <div className={`flex items-center space-x-2 px-3 py-1 rounded-full text-sm font-medium ${databaseStatus.status === 'connected' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-              <div className={`w-2 h-2 rounded-full ${databaseStatus.status === 'connected' ? 'bg-green-400' : 'bg-red-400'}`}></div>
-              <span>{databaseStatus.status === 'connected' ? 'Conectado' : 'Error'}</span>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-primary-600 mb-1">
-                {databaseStatus.total_records || 0}
-              </div>
-              <div className="text-sm text-gray-600">Registros Totales</div>
-            </div>
-
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-sm font-medium text-gray-900 mb-1">
-                {databaseStatus.database || 'N/A'}
-              </div>
-              <div className="text-xs text-gray-500">Base de Datos</div>
-            </div>
-
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-sm font-medium text-gray-900 mb-1">
-                {databaseStatus.host}:{databaseStatus.port}
-              </div>
-              <div className="text-xs text-gray-500">PostgreSQL</div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Analysis Form */}
-
-
-<div className="card-modern w-full max-w-lg mx-auto rounded-2xl shadow-xl border border-gray-200 bg-gradient-to-br from-white to-blue-50 px-8 py-8 flex flex-col items-start space-y-8">
-  <form className="w-full flex flex-col gap-6">
-
-    {/* Duración de captura */}
-    <div className="w-full flex flex-col gap-3">
-      <label className="text-sm font-semibold text-gray-700" htmlFor="duration-range">Duración de Captura (Segundos)</label>
-      <div className="flex items-center gap-4 w-full">
-        <span className="text-sm text-gray-400">5s</span>
-        
-        {/* Control deslizante */}
-        <input
-          id="duration-range"
-          type="range"
-          min="5"
-          max="60"
-          value={duration}
-          onChange={(e) => setDuration(e.target.value)}
-          className="h-2 flex-1 rounded-lg accent-blue-500"
-        />
-
-        <span className="text-sm text-gray-400">60s</span>
-        
-        {/* Campo de texto */}
-        <input
-          type="number"
-          min="5"
-          max="60"
-          value={duration}
-          onChange={(e) => {
-            const value = Math.min(60, Math.max(5, parseInt(e.target.value) || 5));
-            setDuration(value);
-          }}
-          className="form-input text-xs px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 w-16 text-center shadow-sm"
-          placeholder="Seg"
-        />
-      </div>
-    </div>
-
-    {/* Tipo de Conexión */}
-    <div className="w-full flex flex-col gap-3">
-      <label className="text-sm font-semibold text-gray-700" htmlFor="connection-type">Tipo de Conexión</label>
-      <select
-        id="connection-type"
-        value={connectionType}
-        onChange={(e) => setConnectionType(e.target.value)}
-        className="form-select text-sm px-3 py-2 rounded-lg border border-gray-300 focus:border-blue-400 focus:ring-1 focus:ring-blue-200 w-full shadow-sm"
-      >
-        <option value="wifi">WiFi</option>
-        <option value="ethernet">Ethernet</option>
-        <option value="mobile">Móvil</option>
-      </select>
-    </div>
-
-    {/* Botón Iniciar Análisis */}
-    <div className="w-full mt-6">
-      <button
-        type="button"
-        onClick={startAnalysis}
-        disabled={isAnalyzing}
-        className={`w-full px-6 py-3 rounded-lg shadow-lg ${isAnalyzing ? 'bg-gray-400' : 'bg-blue-600 hover:bg-blue-700'} text-white font-semibold text-lg transition-all duration-300 flex items-center justify-center`}
-        style={{ minHeight: 50 }}
-      >
-        {isAnalyzing ? (
-          <div className="flex items-center justify-center">
-            <svg className="animate-spin -ml-1 mr-3 h-6 w-6 text-white" fill="none" viewBox="0 0 24 24">
-              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Analizando...
-          </div>
-        ) : (
-          <div className="flex items-center justify-center">
-            <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.828 14.828a4 4 0 01-5.656 0M9 10h1m4 0h1m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
-            Iniciar Análisis
-          </div>
-        )}
-      </button>
-    </div>
-  </form>
-</div>
-
-
-
-
-      {/* Progress Indicator */}
-      {isAnalyzing && (
-        <div className="card-modern p-6 animate-fade-in">
-          <div className="text-center">
-            <div className="mb-4">
-              <div className="bg-primary-100 p-4 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-primary-600 animate-spin" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                </svg>
-              </div>
-            </div>
-
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
-              Analizando Tráfico de Red
-            </h3>
-
-            <p className="text-primary-600 font-medium mb-4">
-              {progress.message}
-            </p>
-
-            <div className="progress-bar mb-4">
-              <div 
-                className="progress-fill"
-                style={{ width: `${progress.percentage}%` }}
-              ></div>
-            </div>
-
-            <div className="flex justify-between text-sm text-gray-600">
-              <span>Progreso: {progress.percentage}%</span>
-              <span className="flex items-center">
-                <svg className="w-4 h-4 mr-1 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                ML Engine Active
-              </span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Results Section */}
-      {results && (() => {
-        const summaryCards = [
-          {
-            key: 'BENIGN',
-            label: 'BENIGN',
-            color: 'bg-green-100 text-green-800 border-green-200',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#22c55e" /><path d="M8 12l2 2 4-4" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
-            ),
-            description: 'Tráfico seguro'
-          },
-          {
-            key: 'Bot',
-            label: 'Bot',
-            color: 'bg-red-100 text-red-800 border-red-200',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><circle cx="9" cy="10" r="1.5" fill="#fff" /><circle cx="15" cy="10" r="1.5" fill="#fff" /><rect x="8" y="14" width="8" height="2" rx="1" fill="#fff" /></svg>
-            ),
-            description: 'Actividad de Bot'
-          },
-          {
-            key: 'Brute Force',
-            label: 'Brute Force',
-            color: 'bg-red-100 text-red-800 border-red-200',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4" fill="#ef4444" /><path d="M8 16l8-8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-            ),
-            description: 'Ataques por fuerza bruta'
-          },
-          {
-            key: 'DDoS',
-            label: 'DDoS',
-            color: 'bg-red-100 text-red-800 border-red-200',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><path d="M8 12h8M12 8v8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-            ),
-            description: 'Ataques distribuidos'
-          },
-          {
-            key: 'DoS',
-            label: 'DoS',
-            color: 'bg-red-100 text-red-800 border-red-200',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#ef4444" /><rect x="8" y="11" width="8" height="2" rx="1" fill="#fff" /></svg>
-            ),
-            description: 'Ataques de denegación'
-          },
-          {
-            key: 'Port Scan',
-            label: 'Port Scan',
-            color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#f59e42" /><path d="M12 8v4l3 3" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-            ),
-            description: 'Escaneo de puertos'
-          },
-          {
-            key: 'Web Attack',
-            label: 'Web Attack',
-            color: 'bg-yellow-100 text-yellow-800 border-yellow-200',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#f59e42" /><path d="M8 12h8" stroke="#fff" strokeWidth="2" strokeLinecap="round" /></svg>
-            ),
-            description: 'Ataques web'
-          },
-          {
-            key: 'Unknown',
-            label: 'Unknown',
-            color: 'bg-gray-200 text-gray-800 border-gray-300',
-            icon: (
-              <svg className="w-12 h-12" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#6b7280" /><text x="12" y="16" textAnchor="middle" fontSize="8" fill="#fff">?</text></svg>
-            ),
-            description: 'Tipo desconocido'
-          }
-        ];
-        const summary = getSummary(results.full_data || []);
-        return (
-          <div className="space-y-8 animate-fade-in">
-            {/* Display Results as Cards */}
-            <div className="card-modern p-8 bg-gradient-to-br from-blue-50 to-white border border-blue-100 rounded-2xl shadow-xl">
-              <h3 className="text-2xl font-bold mb-8 text-gray-800 tracking-tight text-center">Resultado del Análisis</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center max-w-4xl mx-auto">
-                {summaryCards.map(card => (
-                  <div
-                    key={card.key}
-                    className={`flex items-center gap-3 p-3 rounded-xl border ${card.color} shadow min-w-[160px] max-w-[210px] w-full transition-transform duration-200 hover:scale-105 hover:shadow-lg`}
-                  >
-                    <div className="flex-shrink-0">{React.cloneElement(card.icon, { className: 'w-8 h-8' })}</div>
-                    <div className="flex flex-col justify-center flex-1">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-lg font-bold tracking-tight">{summary[card.key] || 0}</span>
-                        <span className="font-semibold text-xs uppercase tracking-wide">{card.label}</span>
-                      </div>
-                      <div className="text-xs text-gray-500 font-medium mt-0.5">{card.description}</div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-8 text-base text-gray-600 text-center font-medium">{results.summary.total_flows} flujos procesados &bull; {results.summary.columns_count} características procesadas</div>
-            </div>
-          {/* Tabla de resultados: profesional y responsiva */}
-          {results.full_data && results.full_data.length > 0 && (
-            <div className="card-modern p-6">
-              <h3 className="text-lg font-semibold mb-2">Resultados detallados</h3>
-              <div style={{ overflowX: 'auto', maxWidth: '100vw', margin: '0 auto' }}>
-                <table className="table-modern w-full text-sm" style={{ minWidth: 900, margin: '0 auto' }}>
-                  <thead>
-                    <tr>
-                      {(() => {
-                        // Usar los nombres exactos del backend
-                        const backendColOrder = ['Prediction', 'Confidence', 'Flow Duration'];
-                        const allCols = Object.keys(results.full_data[0]).filter(col => col.toLowerCase() !== 'label');
-                        const ordered = [
-                          ...backendColOrder.filter(c => allCols.includes(c)),
-                          ...allCols.filter(col => !backendColOrder.includes(col))
-                        ];
-                        return ordered.map((col) => (
-                          <th key={col} className="px-4 py-2 text-center whitespace-nowrap bg-gray-100 border-b border-gray-200">{col}</th>
-                        ));
-                      })()}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {results.full_data
-                      .slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage)
-                      .map((row, i) => (
-                        <tr key={i} className="hover:bg-gray-50">
-                          {(() => {
-                            // Usar los nombres exactos del backend
-                            const backendColOrder = ['Prediction', 'Confidence', 'Flow Duration'];
-                            const allCols = Object.keys(row).filter(key => key.toLowerCase() !== 'label');
-                            const ordered = [
-                              ...backendColOrder.filter(c => allCols.includes(c)),
-                              ...allCols.filter(col => !backendColOrder.includes(col))
-                            ];
-                            return ordered.map((key, j) => {
-                              let val = row[key];
-                              // Normalizar label para mostrarlo igual que en las tarjetas
-                              if (key === 'Prediction') {
-                                const normalized = LABEL_MAP[val] || val;
-                                const isBenign = normalized === 'BENIGN';
-                                return (
-                                  <td key={j} className="px-4 py-2 text-center border-b border-gray-100 whitespace-nowrap" style={{color: isBenign ? '#16a34a' : '#dc2626', fontWeight: 'bold'}}>
-                                    {normalized}
-                                  </td>
-                                );
-                              }
-                              if (key === 'Confidence' && typeof val === 'number') {
-                                return (
-                                  <td key={j} className="px-4 py-2 text-center border-b border-gray-100 whitespace-nowrap">
-                                    <span style={{
-                                      color: '#111',
-                                      fontWeight: 'bold',
-                                      fontSize: '1.25rem',
-                                      lineHeight: 1.2
-                                    }}>
-                                      {`${Math.round(val * 100)}%`}
-                                    </span>
-                                  </td>
-                                );
-                              }
-                              return (
-                                <td key={j} className="px-4 py-2 text-center border-b border-gray-100 whitespace-nowrap">{val}</td>
-                              );
-                            });
-                          })()}
-                        </tr>
-                      ))}
-                  </tbody>
-                </table>
-              </div>
-              {/* Controles de paginación */}
-              <div className="flex justify-between items-center mt-4">
-                <button
-                  onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                  disabled={currentPage === 1}
-                  className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-                >
-                  Anterior
-                </button>
-                <span>Página {currentPage} de {Math.ceil(results.full_data.length / recordsPerPage)}</span>
-                <button
-                  onClick={() => setCurrentPage((p) => Math.min(Math.ceil(results.full_data.length / recordsPerPage), p + 1))}
-                  disabled={currentPage === Math.ceil(results.full_data.length / recordsPerPage)}
-                  className="px-3 py-1 rounded bg-gray-200 disabled:opacity-50"
-                >
-                  Siguiente
-                </button>
-              </div>
-            </div>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
+        <Stack spacing={4}>
+          {/* Backend Status */}
+          {backendStatus && (
+            <Alert 
+              severity="info" 
+              sx={{ 
+                borderRadius: 2,
+                '& .MuiAlert-message': { width: '100%' }
+              }}
+            >
+              <Box display="flex" justifyContent="space-between" alignItems="center" width="100%">
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Typography variant="subtitle2" fontWeight="bold">
+                    Backend:
+                  </Typography>
+                  <Typography variant="body2">
+                    {backendStatus.message}
+                  </Typography>
+                </Box>
+                <Typography variant="caption" color="textSecondary">
+                  {backendStatus.timestamp}
+                </Typography>
+              </Box>
+            </Alert>
           )}
-          {/* Historial de análisis oculto por requerimiento */}
-        </div>
-      )})()}
-    </div>
+
+          {/* Alert */}
+          <Collapse in={!!alert}>
+            {alert && (
+              <Alert 
+                severity={alert.type === 'error' ? 'error' : 'success'}
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => setAlert(null)}
+                  >
+                    <Close fontSize="inherit" />
+                  </IconButton>
+                }
+                sx={{ borderRadius: 2 }}
+              >
+                {alert.message}
+              </Alert>
+            )}
+          </Collapse>
+
+          {/* Database Status */}
+          {databaseStatus && (
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+              <Box display="flex" alignItems="center" justifyContent="space-between" mb={3}>
+                <Box display="flex" alignItems="center" gap={1}>
+                  <Storage color="primary" />
+                  <Typography variant="h6" fontWeight="bold">
+                    Estado de la Base de Datos
+                  </Typography>
+                </Box>
+                <Chip
+                  icon={databaseStatus.status === 'connected' ? <CheckCircle /> : <ErrorOutline />}
+                  label={databaseStatus.status === 'connected' ? 'Conectado' : 'Error'}
+                  color={databaseStatus.status === 'connected' ? 'success' : 'error'}
+                  variant="outlined"
+                />
+              </Box>
+
+              <Grid container spacing={2}>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ textAlign: 'center', p: 2 }}>
+                    <Typography variant="h4" color="primary" fontWeight="bold">
+                      {databaseStatus.total_records || 0}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Registros Totales
+                    </Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ textAlign: 'center', p: 2 }}>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      {databaseStatus.database || 'N/A'}
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      Base de Datos
+                    </Typography>
+                  </Card>
+                </Grid>
+                <Grid item xs={12} md={4}>
+                  <Card variant="outlined" sx={{ textAlign: 'center', p: 2 }}>
+                    <Typography variant="subtitle1" fontWeight="medium">
+                      {databaseStatus.host}:{databaseStatus.port}
+                    </Typography>
+                    <Typography variant="caption" color="textSecondary">
+                      PostgreSQL
+                    </Typography>
+                  </Card>
+                </Grid>
+              </Grid>
+            </Paper>
+          )}
+
+          {/* Analysis Form */}
+          <StyledPaper elevation={4}>
+            <Box maxWidth={500} mx="auto">
+              <Typography variant="h5" textAlign="center" mb={4} fontWeight="bold" color="primary">
+                Configuración del Análisis
+              </Typography>
+              
+              <Stack spacing={4}>
+                {/* Duration Slider */}
+                <Box>
+                  <Typography variant="subtitle2" gutterBottom fontWeight="bold">
+                    Duración de Captura: {duration} segundos
+                  </Typography>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Typography variant="caption">5s</Typography>
+                    <Slider
+                      value={duration}
+                      onChange={(e, value) => setDuration(value)}
+                      min={5}
+                      max={60}
+                      step={1}
+                      marks
+                      valueLabelDisplay="auto"
+                      sx={{ flex: 1 }}
+                    />
+                    <Typography variant="caption">60s</Typography>
+                    <TextField
+                      type="number"
+                      value={duration}
+                      onChange={(e) => {
+                        const value = Math.min(60, Math.max(5, parseInt(e.target.value) || 5));
+                        setDuration(value);
+                      }}
+                      inputProps={{ min: 5, max: 60 }}
+                      size="small"
+                      sx={{ width: 80 }}
+                    />
+                  </Stack>
+                </Box>
+
+                {/* Connection Type */}
+                <FormControl fullWidth>
+                  <InputLabel>Tipo de Conexión</InputLabel>
+                  <Select
+                    value={connectionType}
+                    label="Tipo de Conexión"
+                    onChange={(e) => setConnectionType(e.target.value)}
+                  >
+                    <MenuItem value="wifi">WiFi</MenuItem>
+                    <MenuItem value="ethernet">Ethernet</MenuItem>
+                    <MenuItem value="mobile">Móvil</MenuItem>
+                  </Select>
+                </FormControl>
+
+                {/* Start Analysis Button */}
+                <Button
+                  variant="contained"
+                  size="large"
+                  onClick={startAnalysis}
+                  disabled={isAnalyzing}
+                  startIcon={isAnalyzing ? <CircularProgress size={20} /> : <PlayArrow />}
+                  sx={{
+                    py: 2,
+                    fontSize: '1.1rem',
+                    fontWeight: 'bold',
+                    borderRadius: 2,
+                    background: 'linear-gradient(45deg, #2196F3 30%, #21CBF3 90%)',
+                    '&:hover': {
+                      background: 'linear-gradient(45deg, #1976D2 30%, #0288D1 90%)',
+                    }
+                  }}
+                >
+                  {isAnalyzing ? 'Analizando...' : 'Iniciar Análisis'}
+                </Button>
+              </Stack>
+            </Box>
+          </StyledPaper>
+
+          {/* Progress Indicator */}
+          {isAnalyzing && (
+            <GradientCard elevation={4}>
+              <CardContent>
+                <Box textAlign="center">
+                  <CircularProgress size={60} sx={{ color: 'white', mb: 2 }} />
+                  <Typography variant="h5" gutterBottom fontWeight="bold">
+                    Analizando Tráfico de Red
+                  </Typography>
+                  <Typography variant="body1" sx={{ mb: 3, opacity: 0.9 }}>
+                    {progress.message}
+                  </Typography>
+                  <LinearProgress 
+                    variant="determinate" 
+                    value={progress.percentage} 
+                    sx={{ 
+                      height: 8, 
+                      borderRadius: 4,
+                      backgroundColor: 'rgba(255,255,255,0.3)',
+                      '& .MuiLinearProgress-bar': {
+                        backgroundColor: 'white'
+                      }
+                    }} 
+                  />
+                  <Box display="flex" justifyContent="space-between" mt={2}>
+                    <Typography variant="body2">
+                      Progreso: {progress.percentage}%
+                    </Typography>
+                    <Box display="flex" alignItems="center" gap={0.5}>
+                      <Shield fontSize="small" />
+                      <Typography variant="body2">
+                        ML Engine Active
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </CardContent>
+            </GradientCard>
+          )}
+
+          {/* Results Section */}
+          {results && (() => {
+            const summary = getSummary(results.full_data || []);
+            const threatTypes = ['BENIGN', 'Bot', 'Brute Force', 'DDoS', 'DoS', 'Port Scan', 'Web Attack', 'Unknown'];
+            
+            return (
+              <Stack spacing={4}>
+                {/* Summary Cards */}
+                <Paper elevation={2} sx={{ p: 4, borderRadius: 3 }}>
+                  <Typography variant="h4" textAlign="center" mb={4} fontWeight="bold" color="primary">
+                    Resultado del Análisis
+                  </Typography>
+                  
+                  <Grid container spacing={3} justifyContent="center">
+                    {threatTypes.map(threatType => (
+                      <Grid item xs={12} sm={6} md={4} lg={3} key={threatType}>
+                        <Card 
+                          elevation={2} 
+                          sx={{ 
+                            borderRadius: 2,
+                            transition: 'transform 0.2s',
+                            '&:hover': { transform: 'translateY(-4px)' }
+                          }}
+                        >
+                          <CardContent sx={{ textAlign: 'center', p: 2 }}>
+                            <Box mb={1}>
+                              {getThreatIcon(threatType)}
+                            </Box>
+                            <Typography variant="h4" fontWeight="bold" color={getThreatColor(threatType) + '.main'}>
+                              {summary[threatType] || 0}
+                            </Typography>
+                            <Typography variant="subtitle2" fontWeight="bold">
+                              {threatType}
+                            </Typography>
+                            <Typography variant="caption" color="textSecondary">
+                              {threatType === 'BENIGN' ? 'Tráfico seguro' : 'Amenaza detectada'}
+                            </Typography>
+                          </CardContent>
+                        </Card>
+                      </Grid>
+                    ))}
+                  </Grid>
+                  
+                  <Divider sx={{ my: 3 }} />
+                  
+                  <Typography variant="body1" textAlign="center" color="textSecondary">
+                    {results.summary.total_flows} flujos procesados • {results.summary.columns_count} características procesadas
+                  </Typography>
+                </Paper>
+
+                {/* Detailed Results Table */}
+                {results.full_data && results.full_data.length > 0 && (
+                  <Paper elevation={2} sx={{ borderRadius: 2 }}>
+                    <Box p={3}>
+                      <Typography variant="h6" gutterBottom fontWeight="bold">
+                        Resultados Detallados
+                      </Typography>
+                    </Box>
+                    
+                    <TableContainer>
+                      <Table>
+                        <TableHead>
+                          <TableRow sx={{ backgroundColor: 'grey.100' }}>
+                            {(() => {
+                              const backendColOrder = ['Prediction', 'Confidence', 'Flow Duration'];
+                              const allCols = Object.keys(results.full_data[0]).filter(col => col.toLowerCase() !== 'label');
+                              const ordered = [
+                                ...backendColOrder.filter(c => allCols.includes(c)),
+                                ...allCols.filter(col => !backendColOrder.includes(col))
+                              ];
+                              return ordered.map((col) => (
+                                <TableCell key={col} align="center" sx={{ fontWeight: 'bold' }}>
+                                  {col}
+                                </TableCell>
+                              ));
+                            })()}
+                          </TableRow>
+                        </TableHead>
+                        <TableBody>
+                          {results.full_data
+                            .slice((currentPage - 1) * recordsPerPage, currentPage * recordsPerPage)
+                            .map((row, i) => (
+                              <TableRow key={i} hover>
+                                {(() => {
+                                  const backendColOrder = ['Prediction', 'Confidence', 'Flow Duration'];
+                                  const allCols = Object.keys(row).filter(key => key.toLowerCase() !== 'label');
+                                  const ordered = [
+                                    ...backendColOrder.filter(c => allCols.includes(c)),
+                                    ...allCols.filter(col => !backendColOrder.includes(col))
+                                  ];
+                                  return ordered.map((key, j) => {
+                                    let val = row[key];
+                                    if (key === 'Prediction') {
+                                      const normalized = LABEL_MAP[val] || val;
+                                      return (
+                                        <TableCell key={j} align="center">
+                                          <Chip
+                                            label={normalized}
+                                            color={getThreatColor(normalized)}
+                                            variant="outlined"
+                                            size="small"
+                                          />
+                                        </TableCell>
+                                      );
+                                    }
+                                    if (key === 'Confidence' && typeof val === 'number') {
+                                      return (
+                                        <TableCell key={j} align="center">
+                                          <Typography variant="h6" fontWeight="bold">
+                                            {`${Math.round(val * 100)}%`}
+                                          </Typography>
+                                        </TableCell>
+                                      );
+                                    }
+                                    return (
+                                      <TableCell key={j} align="center">
+                                        {val}
+                                      </TableCell>
+                                    );
+                                  });
+                                })()}
+                              </TableRow>
+                            ))}
+                        </TableBody>
+                      </Table>
+                    </TableContainer>
+                    
+                    {/* Pagination */}
+                    <Box display="flex" justifyContent="center" p={3}>
+                      <Pagination
+                        count={Math.ceil(results.full_data.length / recordsPerPage)}
+                        page={currentPage}
+                        onChange={(e, page) => setCurrentPage(page)}
+                        color="primary"
+                        size="large"
+                      />
+                    </Box>
+                  </Paper>
+                )}
+              </Stack>
+            );
+          })()}
+        </Stack>
+      </Container>
     </>
   );
 }
