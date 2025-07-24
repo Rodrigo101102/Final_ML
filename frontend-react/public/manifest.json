@@ -1,0 +1,9 @@
+{
+  "name": "ML Traffic Analyzer",
+  "short_name": "MLTraffic",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "description": "Análisis de tráfico de red con ML",
+  "icons": []
+} 

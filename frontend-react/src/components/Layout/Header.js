@@ -1,91 +1,199 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import {
+  AppBar,
+  Toolbar,
+  Typography,
+  Box,
+  Button,
+  Container,
+  IconButton,
+  Chip,
+  Avatar,
+  useTheme,
+  useMediaQuery,
+  Menu,
+  MenuItem
+} from '@mui/material';
+import {
+  Security as SecurityIcon,
+  FiberManualRecord as FiberManualRecordIcon,
+  Menu as MenuIcon
+} from '@mui/icons-material';
 
 const Header = () => {
   const location = useLocation();
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   const isActive = (path) => location.pathname === path;
 
+  const handleMenuOpen = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleMenuClose = () => {
+    setAnchorEl(null);
+  };
+
+  const navigationItems = [
+    { path: '/', label: 'Home' },
+    { path: '/analysis', label: 'Análisis' },
+    { path: '/dashboard', label: 'Dashboard' }
+  ];
+
   return (
-    <header className="bg-gradient-to-r from-indigo-900 via-blue-900 to-blue-700 shadow-lg">
-      <div className="container py-2">
-        <nav className="flex items-center justify-between min-h-[48px]">
-          <div className="flex items-center space-x-2">
-            <Link to="/" className="flex items-center space-x-2 hover:opacity-80 transition-opacity">
-              <div className="bg-primary-500 p-1.5 rounded-xl shadow-lg">
-                <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-              </div>
-              <div>
-                <h1 className="text-xl font-bold text-white tracking-wide mb-0.5">Análisis de Tráfico de Red</h1>
-                <p className="text-gray-300 text-xs">Random Forest</p>
-              </div>
-            </Link>
-          </div>
-          
-          <div className="flex items-center space-x-5">
-            {/* Navigation Menu */}
-            <nav className="hidden md:flex items-center space-x-1">
-              <Link
-                to="/"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                  isActive('/')
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-blue-500 hover:bg-opacity-70'
-                }`}
-                style={{ minWidth: 80, textAlign: 'center' }}
+    <AppBar 
+      position="static" 
+      sx={{
+        background: 'linear-gradient(90deg, #1e3a8a 0%, #1e40af 50%, #1d4ed8 100%)',
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      <Container maxWidth="xl">
+        <Toolbar sx={{ minHeight: '64px !important', py: 1 }}>
+          {/* Logo y título */}
+          <Box 
+            component={Link} 
+            to="/" 
+            sx={{ 
+              display: 'flex', 
+              alignItems: 'center', 
+              textDecoration: 'none',
+              '&:hover': { opacity: 0.8 }
+            }}
+          >
+            <Avatar
+              sx={{
+                bgcolor: theme.palette.primary.main,
+                mr: 2,
+                boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)'
+              }}
+            >
+              <SecurityIcon />
+            </Avatar>
+            <Box>
+              <Typography 
+                variant="h6" 
+                component="h1"
+                sx={{ 
+                  color: 'white', 
+                  fontWeight: 'bold',
+                  lineHeight: 1.2,
+                  mb: 0.2
+                }}
               >
-                Home
-              </Link>
-              <Link
-                to="/analysis"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                  isActive('/analysis')
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-blue-500 hover:bg-opacity-70'
-                }`}
-                style={{ minWidth: 80, textAlign: 'center' }}
+                Análisis de Tráfico de Red
+              </Typography>
+              <Typography 
+                variant="caption" 
+                sx={{ 
+                  color: 'rgba(255, 255, 255, 0.7)',
+                  fontSize: '0.75rem'
+                }}
               >
-                Análisis
-              </Link>
-              <Link
-                to="/dashboard"
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                  isActive('/dashboard')
-                    ? 'bg-blue-500 text-white'
-                    : 'text-gray-300 hover:text-white hover:bg-blue-500 hover:bg-opacity-70'
-                }`}
-                style={{ minWidth: 100, textAlign: 'center' }}
-              >
-                Dashboard
-              </Link>
-            </nav>
+                Random Forest
+              </Typography>
+            </Box>
+          </Box>
 
-            {/* Mobile menu button */}
-            <div className="md:hidden">
-              <Link
-                to="/"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors duration-200 ${
-                  isActive('/') 
-                    ? 'bg-white bg-opacity-20 text-white' 
-                    : 'text-gray-300 hover:text-white'
-                }`}
-              >
-                Dashboard
-              </Link>
-            </div>
+          <Box sx={{ flexGrow: 1 }} />
 
-            {/* Powered by ML badge removed as requested */}
-            
-            <div className="flex items-center space-x-2 bg-green-500 bg-opacity-20 px-3 py-2 rounded-full">
-              <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-400 text-sm font-medium">Activo</span>
-            </div>
-          </div>
-        </nav>
-      </div>
-    </header>
+          {/* Navegación Desktop */}
+          {!isMobile && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mr: 2 }}>
+              {navigationItems.map((item) => (
+                <Button
+                  key={item.path}
+                  component={Link}
+                  to={item.path}
+                  variant={isActive(item.path) ? 'contained' : 'text'}
+                  sx={{
+                    color: isActive(item.path) ? 'white' : 'rgba(255, 255, 255, 0.8)',
+                    backgroundColor: isActive(item.path) ? 'rgba(59, 130, 246, 0.8)' : 'transparent',
+                    minWidth: item.label === 'Dashboard' ? 100 : 80,
+                    '&:hover': {
+                      backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                      color: 'white'
+                    },
+                    borderRadius: 2,
+                    textTransform: 'none',
+                    fontSize: '0.875rem',
+                    fontWeight: 500
+                  }}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </Box>
+          )}
+
+          {/* Navegación Mobile */}
+          {isMobile && (
+            <Box sx={{ mr: 2 }}>
+              <IconButton
+                color="inherit"
+                onClick={handleMenuOpen}
+                sx={{ color: 'rgba(255, 255, 255, 0.8)' }}
+              >
+                <MenuIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                anchorOrigin={{
+                  vertical: 'bottom',
+                  horizontal: 'right',
+                }}
+                transformOrigin={{
+                  vertical: 'top',
+                  horizontal: 'right',
+                }}
+              >
+                {navigationItems.map((item) => (
+                  <MenuItem
+                    key={item.path}
+                    component={Link}
+                    to={item.path}
+                    onClick={handleMenuClose}
+                    selected={isActive(item.path)}
+                  >
+                    {item.label}
+                  </MenuItem>
+                ))}
+              </Menu>
+            </Box>
+          )}
+
+          {/* Estado Activo */}
+          <Chip
+            icon={
+              <FiberManualRecordIcon 
+                sx={{ 
+                  color: '#4ade80 !important',
+                  animation: 'pulse 2s infinite'
+                }} 
+              />
+            }
+            label="Activo"
+            sx={{
+              backgroundColor: 'rgba(34, 197, 94, 0.2)',
+              color: '#4ade80',
+              border: '1px solid rgba(34, 197, 94, 0.3)',
+              fontWeight: 500,
+              '& .MuiChip-icon': {
+                '@keyframes pulse': {
+                  '0%, 100%': { opacity: 1 },
+                  '50%': { opacity: 0.5 }
+                }
+              }
+            }}
+          />
+        </Toolbar>
+      </Container>
+    </AppBar>
   );
 };
 

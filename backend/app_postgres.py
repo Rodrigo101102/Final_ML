@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
@@ -462,18 +462,27 @@ async def analyze_traffic(request: AnalysisRequest):
         raise HTTPException(status_code=500, detail=f"Error inesperado: {str(e)}")
 
 @app.get("/history")
-async def get_history():
-    """Obtener historial de análisis desde la base de datos PostgreSQL"""
+async def get_history(start: str = Query(None), end: str = Query(None)):
+    """Obtener historial de análisis desde la base de datos PostgreSQL, filtrando por rango de fechas si se especifica."""
     try:
         with engine.connect() as conn:
-            result = conn.execute(text("""
+            query = """
                 SELECT timestamp, connection_type, duration, prediction, COUNT(*) as count
-                FROM trafico_predic 
-                GROUP BY timestamp, connection_type, duration, prediction
-                ORDER BY timestamp DESC 
-                LIMIT 100
-            """))
-            
+                FROM trafico_predic
+            """
+            filters = []
+            params = {}
+            if start:
+                filters.append("timestamp >= :start")
+                params['start'] = start
+            if end:
+                filters.append("timestamp <= :end")
+                params['end'] = end
+            if filters:
+                query += " WHERE " + " AND ".join(filters)
+            query += " GROUP BY timestamp, connection_type, duration, prediction"
+            query += " ORDER BY timestamp DESC LIMIT 100"
+            result = conn.execute(text(query), params)
             history = []
             for row in result:
                 history.append({
@@ -483,9 +492,7 @@ async def get_history():
                     "prediction": row.prediction,
                     "count": row.count
                 })
-        
         return {"history": history}
-        
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error obteniendo historial: {str(e)}")
 
